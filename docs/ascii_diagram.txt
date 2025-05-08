@@ -1,0 +1,65 @@
+Solutions Architect Simulator - Architecture Flow Diagram
+
++-------------------+     +-------------------+     +-------------------+
+|                   |     |                   |     |                   |
+|   main.py         |     |   Game            |     |   EventHandler    |
+|                   |     |                   |     |                   |
+|   - Initialize    |---->|   - Run game loop |---->|   - Process events|
+|   - Load config   |     |   - Update state  |     |   - Handle input  |
+|   - Start game    |     |   - Render        |     |                   |
+|                   |     |                   |     |                   |
++-------------------+     +---^-----------+---+     +-------------------+
+                            |             |
+                            |             |
+              +-------------+             +-------------+
+              |                                         |
++-------------v-----+                       +-----------v-------+
+|                   |                       |                   |
+|   LevelManager    |                       |   UIManager       |
+|                   |                       |                   |
+|   - Load levels   |                       |   - Render UI     |
+|   - Update level  |                       |   - Handle clicks |
+|   - Render level  |                       |   - Show tooltips |
+|                   |                       |                   |
++-------------+-----+                       +-----------+-------+
+              |                                         |
+              |                                         |
++-------------v-----+                       +-----------v-------+
+|                   |                       |                   |
+|   BaseLevel       |                       |   UI Components   |
+|                   |                       |                   |
+|   - Level logic   |                       |   - Button        |
+|   - Validation    |                       |   - Tooltip       |
+|   - Rendering     |                       |   - MessageBox    |
+|                   |                       |   - HUD           |
++-------------+-----+                       +-------------------+
+              |
+              |
++-------------v-----+     +-------------------+     +-------------------+
+|                   |     |                   |     |                   |
+|   ServiceRegistry |     |   ServiceNode     |     |   Tests           |
+|                   |     |                   |     |                   |
+|   - Service info  |---->|   - Service       |     |   - SecurityAudit |
+|   - Connection    |     |     representation|     |   - CostEstimator |
+|     rules         |     |   - Rendering     |     |   - PerformanceTest|
+|                   |     |                   |     |                   |
++-------------------+     +-------------------+     +-------------------+
+
+Game Flow:
+
+1. User starts game (main.py)
+2. Game initializes and loads configuration
+3. Game enters main loop:
+   a. Process events (mouse clicks, keyboard input)
+   b. Update game state
+   c. Render current level and UI
+4. User interacts with the game:
+   a. Selects services from the panel
+   b. Places services on the canvas
+   c. Creates connections between services
+   d. Validates architecture
+5. Game evaluates architecture:
+   a. Security audit
+   b. Cost estimation
+   c. Performance testing
+6. User progresses to next level or improves current solution

@@ -1,0 +1,110 @@
+"""
+Core game module that manages the main game loop and state.
+"""
+from typing import Dict, List, Optional, Tuple, Any
+import pygame
+
+from core.config import GameConfig
+from core.state import GameState
+from core.event_handler import EventHandler
+from core.level_manager import LevelManager
+from ui.ui_manager import UIManager
+from ui.main_menu import MainMenu
+
+
+class Game:
+    """Main game class that manages the game loop and state."""
+    
+    def __init__(self, config: GameConfig) -> None:
+        """
+        Initialize the game with configuration.
+        
+        Args:
+            config: Game configuration object
+        """
+        self.config = config
+        self.screen = pygame.display.set_mode(
+            (config.window.width, config.window.height)
+        )
+        pygame.display.set_caption(config.window.title)
+        self.clock = pygame.time.Clock()
+        self.running = False
+        
+        # Initialize game state
+        self.state = GameState()
+        
+        # Initialize managers
+        self.event_handler = EventHandler(self)
+        self.level_manager = LevelManager(self)
+        self.ui_manager = UIManager(self)
+        
+        # Initialize main menu
+        self.main_menu = MainMenu(self)
+        self.show_main_menu = True
+        
+    def run(self) -> None:
+        """Run the main game loop."""
+        self.running = True
+        
+        while self.running:
+            # Handle events
+            self.event_handler.process_events()
+            
+            # Update game state
+            self.update()
+            
+            # Render the game
+            self.render()
+            
+            # Cap the frame rate
+            self.clock.tick(self.config.window.fps)
+    
+    def update(self) -> None:
+        """Update the game state."""
+        if self.show_main_menu:
+            # Update main menu
+            self.main_menu.update()
+            
+            # Check if main menu is closed
+            if not self.main_menu.active:
+                self.show_main_menu = False
+        else:
+            # Update the current level
+            self.level_manager.update()
+            
+            # Update UI components
+            self.ui_manager.update()
+    
+    def render(self) -> None:
+        """Render the game to the screen."""
+        # Clear the screen
+        self.screen.fill((240, 240, 240))  # Light gray background
+        
+        if self.show_main_menu:
+            # Render main menu
+            self.main_menu.render(self.screen)
+        else:
+            # Render the current level
+            self.level_manager.render(self.screen)
+            
+            # Render UI components
+            self.ui_manager.render(self.screen)
+        
+        # Show FPS if debug is enabled
+        if self.config.debug.show_fps:
+            fps = int(self.clock.get_fps())
+            font = pygame.font.SysFont("Arial", 18)
+            fps_text = font.render(f"FPS: {fps}", True, (0, 0, 0))
+            self.screen.blit(fps_text, (10, 10))
+        
+        # Update the display
+        pygame.display.flip()
+    
+    def show_menu(self) -> None:
+        """Show the main menu."""
+        self.show_main_menu = True
+        self.main_menu.active = True
+    
+    def quit(self) -> None:
+        """Quit the game."""
+        self.running = False

@@ -1,0 +1,72 @@
+Solutions Architect Simulator - UI Mockup
+
++------------------------------------------------------------------------------------------------------+
+|                                                                                                      |
+| +----------------------------+                                                                        |
+| | AWS SERVICES               |                                                                        |
+| |                            |                                                                        |
+| | [API Gateway]  [Lambda]    |                                                                        |
+| |                            |                                                                        |
+| | [DynamoDB]    [S3]         |                                                                        |
+| |                            |                                                                        |
+| | [CloudFront]  [Cognito]    |                                                                        |
+| |                            |                                                                        |
+| | [IAM]         [VPC]        |                                                                        |
+| |                            |                                                                        |
+| | [RDS]         [EC2]        |                                                                        |
+| |                            |                                                                        |
+| | [SQS]         [SNS]        |                                                                        |
+| |                            |                                                                        |
+| | [KMS]         [WAF]        |                                                                        |
+| |                            |                                                                        |
+| +----------------------------+                                                                        |
+| |                            |                                                                        |
+| | CATEGORIES                 |                                                                        |
+| |                            |                                                                        |
+| | [Compute]                  |                                                                        |
+| | [Storage]                  |                                                                        |
+| | [Database]                 |                                                                        |
+| | [Networking]               |                                                                        |
+| | [Security]                 |                                                                        |
+| |                            |                                                                        |
+| +----------------------------+                                                                        |
+|                                                                                                      |
+|                                                                                                      |
++------------------------------------------------------------------------------------------------------+
+|                                                                                                      |
+| LEVEL 1: BUILD A BLOG API                                                                            |
+| Score: 120    Budget: $25/$50    Latency: 150ms/300ms                [VALIDATE ARCHITECTURE]         |
+|                                                                                                      |
++------------------------------------------------------------------------------------------------------+
+
+Legend:
+- Left panel: AWS service icons categorized by type (security services in red)
+- Main canvas: Area for dragging and dropping services and creating connections
+- Bottom HUD: Current score, budget usage, latency estimate, and validate button
+
+Tooltip (shown when hovering over a service):
++----------------------------+
+| API Gateway                |
+| Category: Compute          |
+| Cost: $0.025/hour         |
+| Latency: 30ms             |
+|                            |
+| Fully managed service that |
+| makes it easy to create,   |
+| publish, and secure APIs.  |
++----------------------------+
+
+Error Message (shown when invalid connection attempted):
++----------------------------+
+| Lambda → RDS requires VPC  |
++----------------------------+
+
+Level Complete Message:
++----------------------------+
+| Level completed!           |
+|                            |
+| Score: 235                 |
+| Rank: Silver Architect     |
+|                            |
+| [CONTINUE]                 |
++----------------------------+

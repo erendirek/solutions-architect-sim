@@ -1,0 +1,291 @@
+{
+  "levels": [
+    {
+      "id": 1,
+      "title": "Build a Blog API",
+      "description": "Create a simple blog API that allows users to create, read, update, and delete blog posts. The API should store post content in DynamoDB and media files in S3.",
+      "objective": "Build a serverless architecture using API Gateway, Lambda, DynamoDB, and S3 to create a functional blog API.",
+      "required_services": ["api_gateway", "lambda", "dynamodb", "s3"],
+      "optional_services": ["iam", "cloudwatch"],
+      "available_services": [
+        "api_gateway",
+        "lambda",
+        "dynamodb",
+        "s3",
+        "iam",
+        "cloudwatch",
+        "ec2",
+        "rds"
+      ],
+      "budget": 50.0,
+      "max_latency": 300.0,
+      "tutorial": true,
+      "tutorial_steps": [
+        "First, create an API Gateway to handle HTTP requests.",
+        "Next, add a Lambda function to process the API requests.",
+        "Create a DynamoDB table to store blog post data.",
+        "Add an S3 bucket to store media files like images.",
+        "Connect API Gateway to the Lambda function.",
+        "Connect Lambda to both DynamoDB and S3.",
+        "Create an IAM role with appropriate permissions for Lambda.",
+        "Validate your architecture to complete the level."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Static Portfolio Site",
+      "description": "Build a static portfolio website with global content delivery for fast access worldwide.",
+      "objective": "Create an architecture using S3 for static content hosting and CloudFront for global content delivery.",
+      "required_services": ["s3", "cloudfront"],
+      "optional_services": ["waf", "lambda"],
+      "available_services": [
+        "s3",
+        "cloudfront",
+        "waf",
+        "lambda",
+        "route53",
+        "api_gateway"
+      ],
+      "budget": 30.0,
+      "max_latency": 100.0,
+      "tutorial": true,
+      "tutorial_steps": [
+        "First, create an S3 bucket to store your static website files.",
+        "Next, add CloudFront to distribute your content globally.",
+        "Connect CloudFront to the S3 bucket.",
+        "Consider adding WAF for additional security (optional).",
+        "Validate your architecture to complete the level."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Secure User Authentication",
+      "description": "Implement a secure user authentication system for a web application.",
+      "objective": "Build an architecture using Cognito for user authentication and Secrets Manager for secure credential storage.",
+      "required_services": [
+        "cognito",
+        "api_gateway",
+        "lambda",
+        "secrets_manager"
+      ],
+      "optional_services": ["dynamodb", "s3", "cloudfront"],
+      "available_services": [
+        "cognito",
+        "api_gateway",
+        "lambda",
+        "secrets_manager",
+        "dynamodb",
+        "s3",
+        "cloudfront",
+        "iam",
+        "kms"
+      ],
+      "budget": 75.0,
+      "max_latency": 250.0,
+      "tutorial": false,
+      "tutorial_steps": []
+    },
+    {
+      "id": 4,
+      "title": "Real-time Chat Service",
+      "description": "Create a real-time chat service that can handle thousands of concurrent users.",
+      "objective": "Build an architecture using WebSocket API Gateway, Lambda, SQS, and SNS for real-time message delivery.",
+      "required_services": ["api_gateway", "lambda", "sqs", "sns", "dynamodb"],
+      "optional_services": ["cloudwatch", "iam", "cognito"],
+      "available_services": [
+        "api_gateway",
+        "lambda",
+        "sqs",
+        "sns",
+        "dynamodb",
+        "cloudwatch",
+        "iam",
+        "cognito",
+        "elasticache",
+        "s3"
+      ],
+      "budget": 100.0,
+      "max_latency": 150.0,
+      "tutorial": false,
+      "tutorial_steps": []
+    },
+    {
+      "id": 5,
+      "title": "IoT Data Pipeline",
+      "description": "Build a data pipeline to ingest and analyze IoT sensor data.",
+      "objective": "Create an architecture using Kinesis for data ingestion, Lambda for processing, and Redshift for data warehousing.",
+      "required_services": ["kinesis", "lambda", "redshift", "s3"],
+      "optional_services": ["cloudwatch", "sns", "dynamodb"],
+      "available_services": [
+        "kinesis",
+        "lambda",
+        "redshift",
+        "s3",
+        "cloudwatch",
+        "sns",
+        "dynamodb",
+        "glue",
+        "athena",
+        "quicksight"
+      ],
+      "budget": 200.0,
+      "max_latency": 500.0,
+      "tutorial": false,
+      "tutorial_steps": []
+    },
+    {
+      "id": 6,
+      "title": "High-Volume Payment System",
+      "description": "Design a high-volume payment processing system for a FinTech company.",
+      "objective": "Build a scalable and secure architecture using RDS (Aurora), VPC, and Auto Scaling.",
+      "required_services": ["rds", "vpc", "ec2", "auto_scaling", "alb"],
+      "optional_services": ["cloudwatch", "sns", "lambda", "sqs"],
+      "available_services": [
+        "rds",
+        "vpc",
+        "ec2",
+        "auto_scaling",
+        "alb",
+        "cloudwatch",
+        "sns",
+        "lambda",
+        "sqs",
+        "s3",
+        "dynamodb",
+        "elasticache"
+      ],
+      "budget": 300.0,
+      "max_latency": 100.0,
+      "tutorial": false,
+      "tutorial_steps": []
+    },
+    {
+      "id": 7,
+      "title": "HIPAA Compliant Healthcare API",
+      "description": "Create a HIPAA compliant API for a healthcare application that stores and processes patient data.",
+      "objective": "Build a secure architecture using KMS for encryption, CloudTrail for audit logging, and WAF for API protection.",
+      "required_services": [
+        "api_gateway",
+        "lambda",
+        "dynamodb",
+        "kms",
+        "cloudtrail",
+        "waf"
+      ],
+      "optional_services": ["vpc", "s3", "sns", "cloudwatch"],
+      "available_services": [
+        "api_gateway",
+        "lambda",
+        "dynamodb",
+        "kms",
+        "cloudtrail",
+        "waf",
+        "vpc",
+        "s3",
+        "sns",
+        "cloudwatch",
+        "cognito",
+        "secrets_manager"
+      ],
+      "budget": 250.0,
+      "max_latency": 200.0,
+      "tutorial": false,
+      "tutorial_steps": []
+    },
+    {
+      "id": 8,
+      "title": "Video CDN and Transcoding",
+      "description": "Build a video content delivery network with on-the-fly transcoding for different device formats.",
+      "objective": "Create an architecture using MediaConvert for transcoding, S3 for storage, and CloudFront for content delivery.",
+      "required_services": ["media_convert", "s3", "cloudfront", "lambda"],
+      "optional_services": ["elastic_transcoder", "sns", "sqs", "dynamodb"],
+      "available_services": [
+        "media_convert",
+        "elastic_transcoder",
+        "s3",
+        "cloudfront",
+        "lambda",
+        "sns",
+        "sqs",
+        "dynamodb",
+        "api_gateway",
+        "iam"
+      ],
+      "budget": 350.0,
+      "max_latency": 400.0,
+      "tutorial": false,
+      "tutorial_steps": []
+    },
+    {
+      "id": 9,
+      "title": "Microservices Architecture",
+      "description": "Design a microservices architecture for a complex e-commerce application.",
+      "objective": "Build a scalable architecture using ECS/EKS, App Mesh, and ALB for microservices deployment and management.",
+      "required_services": ["ecs", "app_mesh", "alb", "dynamodb", "s3"],
+      "optional_services": ["eks", "cloudwatch", "sns", "sqs", "lambda"],
+      "available_services": [
+        "ecs",
+        "eks",
+        "app_mesh",
+        "alb",
+        "dynamodb",
+        "s3",
+        "cloudwatch",
+        "sns",
+        "sqs",
+        "lambda",
+        "rds",
+        "elasticache",
+        "api_gateway"
+      ],
+      "budget": 400.0,
+      "max_latency": 150.0,
+      "tutorial": false,
+      "tutorial_steps": []
+    },
+    {
+      "id": 10,
+      "title": "Secure FinTech Platform",
+      "description": "Design a highly secure platform for a financial technology company that handles sensitive customer data and transactions.",
+      "objective": "Build a comprehensive security architecture using CloudHSM for key management, GuardDuty for threat detection, and Macie for data protection.",
+      "required_services": [
+        "cloudhsm",
+        "guardduty",
+        "macie",
+        "vpc",
+        "rds",
+        "ec2",
+        "alb"
+      ],
+      "optional_services": [
+        "waf",
+        "cloudtrail",
+        "kms",
+        "secrets_manager",
+        "cognito"
+      ],
+      "available_services": [
+        "cloudhsm",
+        "guardduty",
+        "macie",
+        "vpc",
+        "rds",
+        "ec2",
+        "alb",
+        "waf",
+        "cloudtrail",
+        "kms",
+        "secrets_manager",
+        "cognito",
+        "lambda",
+        "s3",
+        "cloudwatch",
+        "sns"
+      ],
+      "budget": 500.0,
+      "max_latency": 120.0,
+      "tutorial": false,
+      "tutorial_steps": []
+    }
+  ]
+}

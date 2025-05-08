@@ -1,0 +1,6 @@
+This is a placeholder file. 
+
+Please download the AWS Architecture Icons from the AWS Architecture Center:
+https://aws.amazon.com/architecture/icons/
+
+After downloading, extract the icons and place them in this directory with the appropriate names as listed in the README.md file.

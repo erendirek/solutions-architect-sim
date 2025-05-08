@@ -1,0 +1,362 @@
+{
+  "api_gateway": {
+    "display_name": "API Gateway",
+    "description": "Fully managed service that makes it easy for developers to create, publish, maintain, monitor, and secure APIs at any scale.",
+    "category": "compute",
+    "icon_path": "assets/images/services/api_gateway.png",
+    "cost_per_hour": 0.025,
+    "latency_ms": 30.0,
+    "connection_rules": {
+      "direct": ["lambda", "ec2", "ecs", "s3"],
+      "requires": [
+        {
+          "target": "rds",
+          "intermediate": ["lambda", "ec2"],
+          "message": "API Gateway cannot connect directly to RDS. Use Lambda or EC2 as an intermediary."
+        }
+      ]
+    }
+  },
+  "lambda": {
+    "display_name": "Lambda",
+    "description": "Serverless compute service that runs your code in response to events and automatically manages the underlying compute resources.",
+    "category": "compute",
+    "icon_path": "assets/images/services/lambda.png",
+    "cost_per_hour": 0.0125,
+    "latency_ms": 100.0,
+    "connection_rules": {
+      "direct": ["dynamodb", "s3", "sqs", "sns", "kinesis", "cloudwatch"],
+      "requires": [
+        {
+          "target": "rds",
+          "intermediate": ["vpc"],
+          "message": "Lambda → RDS requires a VPC."
+        }
+      ]
+    }
+  },
+  "dynamodb": {
+    "display_name": "DynamoDB",
+    "description": "Fast and flexible NoSQL database service for all applications that need consistent, single-digit millisecond latency at any scale.",
+    "category": "database",
+    "icon_path": "assets/images/services/dynamodb.png",
+    "cost_per_hour": 0.05,
+    "latency_ms": 5.0,
+    "connection_rules": {
+      "direct": [],
+      "requires": []
+    }
+  },
+  "s3": {
+    "display_name": "S3",
+    "description": "Object storage service that offers industry-leading scalability, data availability, security, and performance.",
+    "category": "storage",
+    "icon_path": "assets/images/services/s3.png",
+    "cost_per_hour": 0.01,
+    "latency_ms": 15.0,
+    "connection_rules": {
+      "direct": [],
+      "requires": []
+    }
+  },
+  "cloudfront": {
+    "display_name": "CloudFront",
+    "description": "Fast content delivery network (CDN) service that securely delivers data, videos, applications, and APIs to customers globally.",
+    "category": "networking",
+    "icon_path": "assets/images/services/cloudfront.png",
+    "cost_per_hour": 0.02,
+    "latency_ms": 20.0,
+    "connection_rules": {
+      "direct": ["s3", "ec2", "lambda"],
+      "requires": []
+    }
+  },
+  "cognito": {
+    "display_name": "Cognito",
+    "description": "User identity and data synchronization service that helps you securely manage and synchronize app data for your users across their devices.",
+    "category": "security",
+    "icon_path": "assets/images/services/cognito.png",
+    "cost_per_hour": 0.015,
+    "latency_ms": 50.0,
+    "connection_rules": {
+      "direct": ["api_gateway", "lambda"],
+      "requires": []
+    }
+  },
+  "secrets_manager": {
+    "display_name": "Secrets Manager",
+    "description": "Service that helps you protect access to your applications, services, and IT resources without the upfront cost and complexity of managing your own secrets management infrastructure.",
+    "category": "security",
+    "icon_path": "assets/images/services/secrets_manager.png",
+    "cost_per_hour": 0.005,
+    "latency_ms": 10.0,
+    "connection_rules": {
+      "direct": ["lambda", "ec2", "ecs"],
+      "requires": []
+    }
+  },
+  "sqs": {
+    "display_name": "SQS",
+    "description": "Fully managed message queuing service that enables you to decouple and scale microservices, distributed systems, and serverless applications.",
+    "category": "application_integration",
+    "icon_path": "assets/images/services/sqs.png",
+    "cost_per_hour": 0.008,
+    "latency_ms": 10.0,
+    "connection_rules": {
+      "direct": ["lambda", "ec2", "ecs"],
+      "requires": []
+    }
+  },
+  "sns": {
+    "display_name": "SNS",
+    "description": "Fully managed messaging service for both application-to-application (A2A) and application-to-person (A2P) communication.",
+    "category": "application_integration",
+    "icon_path": "assets/images/services/sns.png",
+    "cost_per_hour": 0.006,
+    "latency_ms": 5.0,
+    "connection_rules": {
+      "direct": ["lambda", "sqs", "http_endpoint"],
+      "requires": []
+    }
+  },
+  "kinesis": {
+    "display_name": "Kinesis",
+    "description": "Platform for streaming data on AWS, offering powerful services to make it easy to load and analyze streaming data.",
+    "category": "analytics",
+    "icon_path": "assets/images/services/kinesis.png",
+    "cost_per_hour": 0.04,
+    "latency_ms": 70.0,
+    "connection_rules": {
+      "direct": ["lambda", "ec2", "redshift"],
+      "requires": []
+    }
+  },
+  "redshift": {
+    "display_name": "Redshift",
+    "description": "Fast, fully managed data warehouse that makes it simple and cost-effective to analyze all your data using standard SQL and your existing BI tools.",
+    "category": "database",
+    "icon_path": "assets/images/services/redshift.png",
+    "cost_per_hour": 0.25,
+    "latency_ms": 200.0,
+    "connection_rules": {
+      "direct": [],
+      "requires": []
+    }
+  },
+  "rds": {
+    "display_name": "RDS",
+    "description": "Set up, operate, and scale a relational database in the cloud with just a few clicks.",
+    "category": "database",
+    "icon_path": "assets/images/services/rds.png",
+    "cost_per_hour": 0.1,
+    "latency_ms": 20.0,
+    "connection_rules": {
+      "direct": [],
+      "requires": []
+    }
+  },
+  "vpc": {
+    "display_name": "VPC",
+    "description": "Provision a logically isolated section of the AWS Cloud where you can launch AWS resources in a virtual network that you define.",
+    "category": "networking",
+    "icon_path": "assets/images/services/vpc.png",
+    "cost_per_hour": 0.01,
+    "latency_ms": 1.0,
+    "connection_rules": {
+      "direct": ["ec2", "rds", "lambda", "ecs"],
+      "requires": []
+    }
+  },
+  "ec2": {
+    "display_name": "EC2",
+    "description": "Web service that provides secure, resizable compute capacity in the cloud.",
+    "category": "compute",
+    "icon_path": "assets/images/services/ec2.png",
+    "cost_per_hour": 0.1,
+    "latency_ms": 5.0,
+    "connection_rules": {
+      "direct": ["s3", "dynamodb", "rds", "sqs", "sns"],
+      "requires": []
+    }
+  },
+  "auto_scaling": {
+    "display_name": "Auto Scaling",
+    "description": "Monitor your applications and automatically adjust capacity to maintain steady, predictable performance at the lowest possible cost.",
+    "category": "compute",
+    "icon_path": "assets/images/services/auto_scaling.png",
+    "cost_per_hour": 0.0,
+    "latency_ms": 0.0,
+    "connection_rules": {
+      "direct": ["ec2", "ecs"],
+      "requires": []
+    }
+  },
+  "iam": {
+    "display_name": "IAM",
+    "description": "Web service that helps you securely control access to AWS resources.",
+    "category": "security",
+    "icon_path": "assets/images/services/iam.png",
+    "cost_per_hour": 0.0,
+    "latency_ms": 5.0,
+    "connection_rules": {
+      "direct": ["lambda", "ec2", "s3", "dynamodb", "rds"],
+      "requires": []
+    }
+  },
+  "cloudwatch": {
+    "display_name": "CloudWatch",
+    "description": "Monitoring and observability service that provides you with data and actionable insights to monitor your applications.",
+    "category": "management",
+    "icon_path": "assets/images/services/cloudwatch.png",
+    "cost_per_hour": 0.01,
+    "latency_ms": 0.0,
+    "connection_rules": {
+      "direct": ["lambda", "ec2", "rds", "dynamodb"],
+      "requires": []
+    }
+  },
+  "kms": {
+    "display_name": "KMS",
+    "description": "Create and control the keys used to encrypt your data.",
+    "category": "security",
+    "icon_path": "assets/images/services/kms.png",
+    "cost_per_hour": 0.03,
+    "latency_ms": 5.0,
+    "connection_rules": {
+      "direct": ["s3", "rds", "dynamodb", "lambda"],
+      "requires": []
+    }
+  },
+  "cloudtrail": {
+    "display_name": "CloudTrail",
+    "description": "Service that enables governance, compliance, operational auditing, and risk auditing of your AWS account.",
+    "category": "security",
+    "icon_path": "assets/images/services/cloudtrail.png",
+    "cost_per_hour": 0.02,
+    "latency_ms": 0.0,
+    "connection_rules": {
+      "direct": ["s3"],
+      "requires": []
+    }
+  },
+  "waf": {
+    "display_name": "WAF",
+    "description": "Web application firewall that helps protect your web applications from common web exploits.",
+    "category": "security",
+    "icon_path": "assets/images/services/waf.png",
+    "cost_per_hour": 0.03,
+    "latency_ms": 1.0,
+    "connection_rules": {
+      "direct": ["api_gateway", "cloudfront"],
+      "requires": []
+    }
+  },
+  "ecs": {
+    "display_name": "ECS",
+    "description": "Highly scalable, fast container management service that makes it easy to run, stop, and manage Docker containers.",
+    "category": "compute",
+    "icon_path": "assets/images/services/ecs.png",
+    "cost_per_hour": 0.0,
+    "latency_ms": 10.0,
+    "connection_rules": {
+      "direct": ["s3", "dynamodb", "rds", "sqs", "sns"],
+      "requires": []
+    }
+  },
+  "eks": {
+    "display_name": "EKS",
+    "description": "Managed service that makes it easy for you to run Kubernetes on AWS without needing to install and operate your own Kubernetes control plane.",
+    "category": "compute",
+    "icon_path": "assets/images/services/eks.png",
+    "cost_per_hour": 0.1,
+    "latency_ms": 15.0,
+    "connection_rules": {
+      "direct": ["s3", "dynamodb", "rds", "sqs", "sns"],
+      "requires": []
+    }
+  },
+  "app_mesh": {
+    "display_name": "App Mesh",
+    "description": "Service mesh that provides application-level networking to make it easy for your services to communicate with each other across multiple types of compute infrastructure.",
+    "category": "networking",
+    "icon_path": "assets/images/services/app_mesh.png",
+    "cost_per_hour": 0.01,
+    "latency_ms": 1.0,
+    "connection_rules": {
+      "direct": ["ecs", "eks", "ec2"],
+      "requires": []
+    }
+  },
+  "alb": {
+    "display_name": "ALB",
+    "description": "Load balancer that automatically distributes incoming application traffic across multiple targets.",
+    "category": "networking",
+    "icon_path": "assets/images/services/alb.png",
+    "cost_per_hour": 0.0225,
+    "latency_ms": 3.0,
+    "connection_rules": {
+      "direct": ["ec2", "ecs", "lambda"],
+      "requires": []
+    }
+  },
+  "cloudhsm": {
+    "display_name": "CloudHSM",
+    "description": "Cloud-based hardware security module (HSM) that enables you to easily generate and use your own encryption keys on the AWS Cloud.",
+    "category": "security",
+    "icon_path": "assets/images/services/cloudhsm.png",
+    "cost_per_hour": 1.5,
+    "latency_ms": 10.0,
+    "connection_rules": {
+      "direct": ["ec2", "lambda"],
+      "requires": []
+    }
+  },
+  "guardduty": {
+    "display_name": "GuardDuty",
+    "description": "Threat detection service that continuously monitors for malicious activity and unauthorized behavior to protect your AWS accounts and workloads.",
+    "category": "security",
+    "icon_path": "assets/images/services/guardduty.png",
+    "cost_per_hour": 0.1,
+    "latency_ms": 0.0,
+    "connection_rules": {
+      "direct": ["cloudwatch", "lambda"],
+      "requires": []
+    }
+  },
+  "macie": {
+    "display_name": "Macie",
+    "description": "Fully managed data security and data privacy service that uses machine learning and pattern matching to discover and protect your sensitive data in AWS.",
+    "category": "security",
+    "icon_path": "assets/images/services/macie.png",
+    "cost_per_hour": 0.1,
+    "latency_ms": 0.0,
+    "connection_rules": {
+      "direct": ["s3", "cloudwatch"],
+      "requires": []
+    }
+  },
+  "media_convert": {
+    "display_name": "MediaConvert",
+    "description": "File-based video transcoding service with broadcast-grade features.",
+    "category": "media",
+    "icon_path": "assets/images/services/media_convert.png",
+    "cost_per_hour": 0.2,
+    "latency_ms": 0.0,
+    "connection_rules": {
+      "direct": ["s3"],
+      "requires": []
+    }
+  },
+  "elastic_transcoder": {
+    "display_name": "Elastic Transcoder",
+    "description": "Media transcoding in the cloud.",
+    "category": "media",
+    "icon_path": "assets/images/services/elastic_transcoder.png",
+    "cost_per_hour": 0.15,
+    "latency_ms": 0.0,
+    "connection_rules": {
+      "direct": ["s3"],
+      "requires": []
+    }
+  }
+}

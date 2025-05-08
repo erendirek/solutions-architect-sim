@@ -1,0 +1,35 @@
+{
+  "window": {
+    "width": 1280,
+    "height": 720,
+    "title": "Solutions Architect Simulator",
+    "fps": 60
+  },
+  "ui": {
+    "service_panel_width": 280,
+    "hud_height": 100,
+    "canvas_padding": 20,
+    "tooltip_delay_ms": 500
+  },
+  "game": {
+    "starting_level": 1,
+    "max_levels": 10,
+    "time_trial_seconds": 90,
+    "score_thresholds": {
+      "bronze": 150,
+      "silver": 250
+    },
+    "scoring": {
+      "requirements_fulfilled": 40,
+      "correct_connection": 15,
+      "security_violation": -30,
+      "unnecessary_service": -20,
+      "cost_optimization": 25
+    }
+  },
+  "debug": {
+    "enabled": true,
+    "show_fps": true,
+    "unlock_all_levels": false
+  }
+}
