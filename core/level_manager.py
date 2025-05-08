@@ -154,6 +154,13 @@ class LevelManager:
         if not self.current_level:
             return
             
+        # Check if clicking on a connection to remove it
+        connection = self.current_level.get_connection_at_point(pos)
+        if connection:
+            source, target = connection
+            self.current_level.remove_connection(source, target)
+            return
+            
         # Check if clicking on a placed service to start a connection
         service_node = self.current_level.get_service_node_at_canvas(pos)
         if service_node:
@@ -178,8 +185,15 @@ class LevelManager:
                 self.current_level.place_service(self.dragging_service, pos)
             self.dragging_service = None
         
-        # If dragging an existing service node, release it
+        # If dragging an existing service node, check if it should be removed or released
         if self.dragging_node:
+            # Check if the node is being dragged to the service panel (to remove it)
+            if self.current_level.service_panel_rect.collidepoint(pos):
+                # Remove the service
+                self.current_level.remove_service(self.dragging_node)
+                self.game.ui_manager.show_message("Service removed")
+            
+            # Reset dragging state
             self.dragging_node = None
     
     def handle_right_release(self, pos: Tuple[int, int]) -> None:
@@ -223,11 +237,8 @@ class LevelManager:
                 pos[1] + self.drag_offset[1]
             )
             
-            # Check if the new position is within the canvas
-            canvas_rect = self.current_level.get_canvas_rect()
-            if canvas_rect.collidepoint(new_pos):
-                # Move the node to the new position
-                self.dragging_node.move_to(new_pos)
-                
-                # Update connections in the game state
-                self.current_level.update_connections()
+            # Move the node to the new position (we'll check boundaries in the release handler)
+            self.dragging_node.move_to(new_pos)
+            
+            # Update connections in the game state
+            self.current_level.update_connections()

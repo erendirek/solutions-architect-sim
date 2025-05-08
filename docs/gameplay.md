@@ -19,6 +19,8 @@ The objective of the Solutions Architect Simulator is to design AWS architecture
 
 - **Left Mouse Button**: Drag services from the panel to the canvas, or move existing services
 - **Right Mouse Button**: Create connections between services
+- **Right-Click on Connection**: Remove an existing connection
+- **Drag Service to Panel**: Remove a service by dragging it back to the service panel
 - **Hover**: Hover over a service icon to see its description, cost, and latency
 - **Validate Button**: Click to validate your architecture and complete the level
 - **Menu Button**: Return to the main menu
@@ -37,8 +39,10 @@ The main menu allows you to:
 
 1. **Select and Place Services**: Drag a service icon from the left panel to the canvas
 2. **Move Services**: Drag placed services with the left mouse button to reposition them
-3. **Create Connections**: Right-click on a service, then right-click on another service to create a connection
-4. **Validate**: Click the "Validate Architecture" button to check your solution
+3. **Remove Services**: Drag a service back to the left panel to remove it
+4. **Create Connections**: Right-click on a service, then right-click on another service to create a connection
+5. **Remove Connections**: Right-click on an existing connection to remove it
+6. **Validate**: Click the "Validate Architecture" button to check your solution
 
 ## Game Modes
 

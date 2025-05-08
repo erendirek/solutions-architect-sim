@@ -122,6 +122,10 @@ class CostEstimator:
         # Count connections that incur data transfer costs
         billable_connections = 0
         for source, target in connections:
+            # Skip connections if either service doesn't exist anymore
+            if source not in services or target not in services:
+                continue
+                
             # Skip connections that don't incur data transfer costs
             if source == "cloudfront" and target == "s3":
                 continue

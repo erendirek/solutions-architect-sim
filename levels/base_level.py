@@ -47,6 +47,13 @@ class BaseLevel(ABC):
             self.game.config.window.width - self.game.config.ui.service_panel_width - 2 * self.game.config.ui.canvas_padding,
             self.game.config.window.height - self.game.config.ui.hud_height - 2 * self.game.config.ui.canvas_padding
         )
+        
+        # Service panel rect for removing services
+        self.service_panel_rect = pygame.Rect(
+            0, 0, 
+            self.game.config.ui.service_panel_width,
+            self.game.config.window.height - self.game.config.ui.hud_height
+        )
     
     def load_level_data(self, level_id: int) -> bool:
         """
@@ -105,6 +112,130 @@ class BaseLevel(ABC):
         # No need to update the connections list itself as it contains references to the nodes
         # The nodes' positions are updated automatically when they are moved
         pass
+    
+    def remove_service(self, node: ServiceNode) -> None:
+        """
+        Remove a service node and all its connections.
+        
+        Args:
+            node: The service node to remove
+        """
+        if node in self.placed_service_nodes:
+            # Store the service ID before removing the node
+            service_id = node.service_id
+            
+            # Remove all connections involving this node
+            self.connections = [
+                (source, target) for source, target in self.connections
+                if source != node and target != node
+            ]
+            
+            # Update game state connections
+            self.game.state.connections = [
+                (source_id, target_id) for source_id, target_id in self.game.state.connections
+                if source_id != service_id and target_id != service_id
+            ]
+            
+            # Remove the node from placed services
+            self.placed_service_nodes.remove(node)
+            
+            # Remove from game state
+            # We need to handle the case where multiple instances of the same service might exist
+            # Count occurrences of this service type in remaining nodes
+            remaining_count = sum(1 for n in self.placed_service_nodes if n.service_id == service_id)
+            
+            # Count occurrences in the game state
+            state_count = self.game.state.placed_services.count(service_id)
+            
+            # If we have more in state than remaining nodes, remove one
+            if state_count > remaining_count:
+                self.game.state.placed_services.remove(service_id)
+    
+    def remove_connection(self, source: ServiceNode, target: ServiceNode) -> bool:
+        """
+        Remove a connection between two service nodes.
+        
+        Args:
+            source: Source service node
+            target: Target service node
+            
+        Returns:
+            True if connection was removed, False if not found
+        """
+        # Check if the connection exists
+        connection = next(((s, t) for s, t in self.connections if s == source and t == target), None)
+        if connection:
+            # Remove from connections list
+            self.connections.remove(connection)
+            
+            # Remove from game state
+            state_connection = (source.service_id, target.service_id)
+            if state_connection in self.game.state.connections:
+                self.game.state.connections.remove(state_connection)
+            
+            return True
+        
+        return False
+    
+    def get_connection_at_point(self, pos: Tuple[int, int], tolerance: int = 10) -> Optional[Tuple[ServiceNode, ServiceNode]]:
+        """
+        Find a connection near the given point.
+        
+        Args:
+            pos: Position to check (x, y)
+            tolerance: Distance tolerance in pixels
+            
+        Returns:
+            Tuple of (source, target) nodes if found, None otherwise
+        """
+        for source, target in self.connections:
+            # Get connection points
+            start = source.get_connection_point()
+            end = target.get_connection_point()
+            
+            # Calculate distance from point to line segment
+            distance = self._point_to_line_distance(pos, start, end)
+            
+            if distance <= tolerance:
+                return (source, target)
+        
+        return None
+    
+    def _point_to_line_distance(self, point: Tuple[int, int], line_start: Tuple[int, int], line_end: Tuple[int, int]) -> float:
+        """
+        Calculate the distance from a point to a line segment.
+        
+        Args:
+            point: The point (x, y)
+            line_start: Start point of the line (x, y)
+            line_end: End point of the line (x, y)
+            
+        Returns:
+            Distance in pixels
+        """
+        import math
+        
+        # Convert to vectors
+        x, y = point
+        x1, y1 = line_start
+        x2, y2 = line_end
+        
+        # Calculate line length squared
+        line_length_sq = (x2 - x1) ** 2 + (y2 - y1) ** 2
+        
+        # If line is a point, return distance to that point
+        if line_length_sq == 0:
+            return math.sqrt((x - x1) ** 2 + (y - y1) ** 2)
+        
+        # Calculate projection of point onto line
+        t = max(0, min(1, ((x - x1) * (x2 - x1) + (y - y1) * (y2 - y1)) / line_length_sq))
+        
+        # Calculate closest point on line
+        proj_x = x1 + t * (x2 - x1)
+        proj_y = y1 + t * (y2 - y1)
+        
+        # Return distance to closest point
+        return math.sqrt((x - proj_x) ** 2 + (y - proj_y) ** 2)
     
     @abstractmethod
     def update(self) -> None:
