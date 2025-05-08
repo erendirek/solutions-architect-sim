@@ -69,7 +69,8 @@ class HUD:
             
             estimated_cost = CostEstimator.estimate_monthly_cost(
                 self.game.state.placed_services,
-                self.game.state.connections
+                self.game.state.connections,
+                level.level_id
             )
             
             budget_text = self.info_font.render(
@@ -84,7 +85,8 @@ class HUD:
             
             estimated_latency = PerformanceTest.estimate_latency(
                 self.game.state.placed_services,
-                self.game.state.connections
+                self.game.state.connections,
+                level.level_id
             )
             
             latency_text = self.info_font.render(

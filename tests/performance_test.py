@@ -1,7 +1,7 @@
 """
 Performance test module for evaluating architecture performance.
 """
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, Optional, Set, Tuple
 
 from services.service_registry import ServiceRegistry
 
@@ -13,7 +13,8 @@ class PerformanceTest:
     def estimate_latency(
         cls,
         services: List[str],
-        connections: List[Tuple[str, str]]
+        connections: List[Tuple[str, str]],
+        level_id: Optional[int] = None
     ) -> float:
         """
         Estimate the end-to-end latency of an architecture.

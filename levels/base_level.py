@@ -382,7 +382,8 @@ class BaseLevel(ABC):
         from tests.security_audit import SecurityAudit
         security_issues = SecurityAudit.audit_architecture(
             self.game.state.placed_services,
-            self.game.state.connections
+            self.game.state.connections,
+            self.level_id
         )
         
         if security_issues:
@@ -397,7 +398,8 @@ class BaseLevel(ABC):
         from tests.cost_estimator import CostEstimator
         estimated_cost = CostEstimator.estimate_monthly_cost(
             self.game.state.placed_services,
-            self.game.state.connections
+            self.game.state.connections,
+            self.level_id
         )
         
         if estimated_cost > self.budget:
@@ -411,7 +413,8 @@ class BaseLevel(ABC):
         from tests.performance_test import PerformanceTest
         estimated_latency = PerformanceTest.estimate_latency(
             self.game.state.placed_services,
-            self.game.state.connections
+            self.game.state.connections,
+            self.level_id
         )
         
         if estimated_latency > self.max_latency:

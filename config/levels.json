@@ -17,8 +17,8 @@
         "ec2",
         "rds"
       ],
-      "budget": 50.0,
-      "max_latency": 300.0,
+      "budget": 100.0,
+      "max_latency": 400.0,
       "tutorial": true,
       "tutorial_steps": [
         "First, create an API Gateway to handle HTTP requests.",
@@ -46,8 +46,8 @@
         "route53",
         "api_gateway"
       ],
-      "budget": 30.0,
-      "max_latency": 100.0,
+      "budget": 80.0,
+      "max_latency": 150.0,
       "tutorial": true,
       "tutorial_steps": [
         "First, create an S3 bucket to store your static website files.",
@@ -80,8 +80,8 @@
         "iam",
         "kms"
       ],
-      "budget": 75.0,
-      "max_latency": 250.0,
+      "budget": 120.0,
+      "max_latency": 300.0,
       "tutorial": false,
       "tutorial_steps": []
     },
@@ -104,8 +104,8 @@
         "elasticache",
         "s3"
       ],
-      "budget": 100.0,
-      "max_latency": 150.0,
+      "budget": 150.0,
+      "max_latency": 200.0,
       "tutorial": false,
       "tutorial_steps": []
     },
@@ -128,8 +128,8 @@
         "athena",
         "quicksight"
       ],
-      "budget": 200.0,
-      "max_latency": 500.0,
+      "budget": 250.0,
+      "max_latency": 600.0,
       "tutorial": false,
       "tutorial_steps": []
     },
@@ -154,8 +154,8 @@
         "dynamodb",
         "elasticache"
       ],
-      "budget": 300.0,
-      "max_latency": 100.0,
+      "budget": 350.0,
+      "max_latency": 150.0,
       "tutorial": false,
       "tutorial_steps": []
     },
@@ -187,8 +187,8 @@
         "cognito",
         "secrets_manager"
       ],
-      "budget": 250.0,
-      "max_latency": 200.0,
+      "budget": 300.0,
+      "max_latency": 250.0,
       "tutorial": false,
       "tutorial_steps": []
     },
@@ -211,8 +211,8 @@
         "api_gateway",
         "iam"
       ],
-      "budget": 350.0,
-      "max_latency": 400.0,
+      "budget": 400.0,
+      "max_latency": 500.0,
       "tutorial": false,
       "tutorial_steps": []
     },
@@ -238,8 +238,8 @@
         "elasticache",
         "api_gateway"
       ],
-      "budget": 400.0,
-      "max_latency": 150.0,
+      "budget": 450.0,
+      "max_latency": 200.0,
       "tutorial": false,
       "tutorial_steps": []
     },
@@ -282,8 +282,8 @@
         "cloudwatch",
         "sns"
       ],
-      "budget": 500.0,
-      "max_latency": 120.0,
+      "budget": 600.0,
+      "max_latency": 180.0,
       "tutorial": false,
       "tutorial_steps": []
     }
