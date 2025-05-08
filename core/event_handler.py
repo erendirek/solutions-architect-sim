@@ -65,9 +65,11 @@ class EventHandler:
         if self.game.ui_manager.handle_mouse_down(event):
             return
         
-        # Handle canvas interactions (service placement, connection drawing)
+        # Handle canvas interactions based on mouse button
         if event.button == 1:  # Left click
-            self.game.level_manager.handle_canvas_click(event.pos)
+            self.game.level_manager.handle_left_click(event.pos)
+        elif event.button == 3:  # Right click
+            self.game.level_manager.handle_right_click(event.pos)
     
     def _handle_mouse_up(self, event: pygame.event.Event) -> None:
         """
@@ -85,9 +87,11 @@ class EventHandler:
         if self.game.ui_manager.handle_mouse_up(event):
             return
         
-        # Handle canvas interactions (completing connections)
+        # Handle canvas interactions based on mouse button
         if event.button == 1:  # Left click
-            self.game.level_manager.handle_canvas_release(event.pos)
+            self.game.level_manager.handle_left_release(event.pos)
+        elif event.button == 3:  # Right click
+            self.game.level_manager.handle_right_release(event.pos)
     
     def _handle_mouse_motion(self, event: pygame.event.Event) -> None:
         """
@@ -104,5 +108,5 @@ class EventHandler:
         # Update UI hover states
         self.game.ui_manager.handle_mouse_motion(event)
         
-        # Update canvas hover states and connection drawing
+        # Update canvas hover states, connection drawing, and node dragging
         self.game.level_manager.handle_canvas_motion(event.pos)

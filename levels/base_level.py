@@ -100,6 +100,12 @@ class BaseLevel(ABC):
             print(f"Error loading level data: {e}")
             return False
     
+    def update_connections(self) -> None:
+        """Update connections when service nodes are moved."""
+        # No need to update the connections list itself as it contains references to the nodes
+        # The nodes' positions are updated automatically when they are moved
+        pass
+    
     @abstractmethod
     def update(self) -> None:
         """Update the level state."""
