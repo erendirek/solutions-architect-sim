@@ -30,6 +30,9 @@ class EventHandler:
                 self._handle_mouse_up(event)
             elif event.type == pygame.MOUSEMOTION:
                 self._handle_mouse_motion(event)
+            elif event.type == pygame.USEREVENT:
+                # Handle custom events
+                self._handle_user_event(event)
     
     def _handle_keydown(self, event: pygame.event.Event) -> None:
         """
@@ -125,3 +128,24 @@ class EventHandler:
         
         # Update canvas hover states, connection drawing, and node dragging
         self.game.level_manager.handle_canvas_motion(event.pos)
+    
+    def _handle_user_event(self, event: pygame.event.Event) -> None:
+        """
+        Handle custom user events.
+        
+        Args:
+            event: Pygame user event
+        """
+        # Time's up event
+        if hasattr(event, 'code') and event.code == 'TIME_OUT':
+            # Return to main menu
+            self.game.show_menu()
+            
+            # Reset timer
+            pygame.time.set_timer(pygame.USEREVENT, 0)  # Cancel the timer
+        else:
+            # Generic timer event (used for time out)
+            self.game.show_menu()
+            
+            # Reset timer
+            pygame.time.set_timer(pygame.USEREVENT, 0)  # Cancel the timer

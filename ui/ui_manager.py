@@ -83,6 +83,16 @@ class UIManager:
             
         # If valid, mark level as completed
         level_id = self.game.state.current_level_id
+        
+        # Double the score if in time trial mode
+        if self.game.state.mode == self.game.state.mode.TIME_TRIAL:
+            self.game.state.score *= 2
+            self.show_message("Time Trial bonus: Score doubled!")
+            
+            # Stop the timer
+            self.game.time_manager.time_out = True
+        
+        # Complete the level
         self.game.state.complete_level(level_id, self.game.state.score)
         
         # Get rank

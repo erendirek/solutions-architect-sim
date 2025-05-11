@@ -60,7 +60,10 @@ class GameState:
         self.placed_services = []
         self.connections = []
         self.score = 0
-        self.time_remaining = None
+        
+        # Only reset time_remaining if not in TIME_TRIAL mode
+        if self.mode != GameMode.TIME_TRIAL:
+            self.time_remaining = None
     
     def complete_level(self, level_id: int, score: int) -> None:
         """

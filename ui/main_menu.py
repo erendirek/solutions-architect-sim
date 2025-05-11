@@ -300,11 +300,16 @@ class MainMenu:
         # Set game mode
         if self.tutorial_mode:
             self.game.state.mode = GameMode.TUTORIAL
+            self.game.state.time_remaining = None
         elif self.time_trial_mode:
             self.game.state.mode = GameMode.TIME_TRIAL
-            self.game.state.time_remaining = self.game.config.game.time_trial_seconds
+            self.game.state.time_remaining = float(self.game.config.game.time_trial_seconds)
+            # Reset time manager
+            self.game.time_manager.reset()
+            print(f"Starting Time Trial mode with {self.game.state.time_remaining} seconds")
         else:
             self.game.state.mode = GameMode.NORMAL
+            self.game.state.time_remaining = None
         
         # Load the selected level
         self.game.level_manager.load_level(self.selected_level)

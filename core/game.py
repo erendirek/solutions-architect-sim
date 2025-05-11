@@ -5,9 +5,10 @@ from typing import Dict, List, Optional, Tuple, Any
 import pygame
 
 from core.config import GameConfig
-from core.state import GameState
+from core.state import GameState, GameMode
 from core.event_handler import EventHandler
 from core.level_manager import LevelManager
+from core.time_manager import TimeManager
 from ui.ui_manager import UIManager
 from ui.main_menu import MainMenu
 
@@ -37,6 +38,7 @@ class Game:
         self.event_handler = EventHandler(self)
         self.level_manager = LevelManager(self)
         self.ui_manager = UIManager(self)
+        self.time_manager = TimeManager(self)
         
         # Initialize main menu
         self.main_menu = MainMenu(self)
@@ -83,6 +85,9 @@ class Game:
         else:
             # Update the current level
             self.level_manager.update()
+            
+            # Update time manager
+            self.time_manager.update()
             
             # Update UI components
             self.ui_manager.update()

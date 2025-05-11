@@ -30,8 +30,13 @@ class HUD:
     
     def update(self) -> None:
         """Update the HUD state."""
-        # No dynamic updates needed for now
-        pass
+        # Update time remaining in time trial mode
+        from core.state import GameMode
+        if self.game.state.mode == GameMode.TIME_TRIAL and self.game.state.time_remaining is not None:
+            # Check if time has run out
+            if self.game.state.time_remaining <= 0 and not self.game.time_manager.time_out:
+                self.game.time_manager.time_out = True
+                self.game.time_manager._handle_time_out()
     
     def render(self, surface: pygame.Surface) -> None:
         """
@@ -97,9 +102,10 @@ class HUD:
             surface.blit(latency_text, (400, self.rect.top + 35))
             
             # Draw time remaining if in time trial mode
-            if self.game.state.time_remaining is not None:
-                minutes = self.game.state.time_remaining // 60
-                seconds = self.game.state.time_remaining % 60
+            from core.state import GameMode
+            if self.game.state.mode == GameMode.TIME_TRIAL and self.game.state.time_remaining is not None:
+                minutes = int(self.game.state.time_remaining // 60)
+                seconds = int(self.game.state.time_remaining % 60)
                 
                 time_text = self.info_font.render(
                     f"Time: {minutes:02d}:{seconds:02d}",

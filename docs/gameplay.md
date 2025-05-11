@@ -64,6 +64,12 @@ Complete the level within 90 seconds for double points. To activate:
 2. Click the "Time Trial: OFF" button to toggle it to "ON"
 3. Click "Start Level"
 
+In Time Trial mode:
+- A timer appears showing the remaining time
+- You must complete the level before time runs out
+- Successfully validating your architecture before time runs out doubles your score
+- If time runs out before you validate, you'll return to the main menu
+
 ## Scoring System
 
 - **Requirements Fulfilled**: +40 points
@@ -71,6 +77,7 @@ Complete the level within 90 seconds for double points. To activate:
 - **Security Violation**: -30 points per violation
 - **Unnecessary Service**: -20 points per service
 - **Cost Optimization**: +25 points if under budget
+- **Time Trial Bonus**: Score doubled if completed within time limit
 
 ## Ranks
 
