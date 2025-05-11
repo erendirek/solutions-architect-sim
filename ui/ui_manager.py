@@ -66,23 +66,30 @@ class UIManager:
         if not self.game.level_manager.current_level:
             return
             
+        # If completion screen is already showing, ignore additional clicks
+        if self.game.show_completion_screen:
+            return
+            
         # Validate the current architecture
         is_valid, message, score_adjustment = self.game.level_manager.current_level.validate_architecture()
         
         # Update score
         self.game.state.score += score_adjustment
         
-        # Show result message
-        self.show_message(message)
-        
-        # If valid, mark level as completed
-        if is_valid:
-            level_id = self.game.state.current_level_id
-            self.game.state.complete_level(level_id, self.game.state.score)
+        # If not valid, show error message
+        if not is_valid:
+            self.show_message(message)
+            return
             
-            # Show completion message with rank
-            rank = self.game.state.get_rank_for_score(self.game.state.score)
-            self.show_message(f"Level completed! You earned {self.game.state.score} points and {rank} Architect rank.")
+        # If valid, mark level as completed
+        level_id = self.game.state.current_level_id
+        self.game.state.complete_level(level_id, self.game.state.score)
+        
+        # Get rank
+        rank = self.game.state.get_rank_for_score(self.game.state.score)
+        
+        # Show completion screen
+        self.game.show_level_completion(self.game.state.score, rank, level_id)
     
     def _on_menu_click(self) -> None:
         """Handle click on the menu button."""

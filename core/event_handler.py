@@ -61,6 +61,11 @@ class EventHandler:
             self.game.main_menu.handle_mouse_down(event)
             return
             
+        # Handle completion screen interactions if active
+        if self.game.show_completion_screen and self.game.completion_screen:
+            self.game.completion_screen.handle_mouse_down(event)
+            return
+            
         # Delegate to UI manager for UI element clicks
         if self.game.ui_manager.handle_mouse_down(event):
             return
@@ -83,6 +88,11 @@ class EventHandler:
             self.game.main_menu.handle_mouse_up(event)
             return
             
+        # Handle completion screen interactions if active
+        if self.game.show_completion_screen and self.game.completion_screen:
+            self.game.completion_screen.handle_mouse_up(event)
+            return
+            
         # Delegate to UI manager
         if self.game.ui_manager.handle_mouse_up(event):
             return
@@ -103,6 +113,11 @@ class EventHandler:
         # Handle main menu interactions if active
         if self.game.show_main_menu:
             self.game.main_menu.handle_mouse_motion(event)
+            return
+            
+        # Handle completion screen interactions if active
+        if self.game.show_completion_screen and self.game.completion_screen:
+            self.game.completion_screen.handle_mouse_motion(event)
             return
             
         # Update UI hover states

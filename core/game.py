@@ -42,6 +42,10 @@ class Game:
         self.main_menu = MainMenu(self)
         self.show_main_menu = True
         
+        # Initialize completion screen
+        self.completion_screen = None
+        self.show_completion_screen = False
+        
     def run(self) -> None:
         """Run the main game loop."""
         self.running = True
@@ -68,6 +72,14 @@ class Game:
             # Check if main menu is closed
             if not self.main_menu.active:
                 self.show_main_menu = False
+        elif self.show_completion_screen and self.completion_screen:
+            # Update completion screen
+            self.completion_screen.update()
+            
+            # Check if completion screen is closed
+            if not self.completion_screen.active:
+                self.show_completion_screen = False
+                self.completion_screen = None
         else:
             # Update the current level
             self.level_manager.update()
@@ -89,6 +101,10 @@ class Game:
             
             # Render UI components
             self.ui_manager.render(self.screen)
+            
+            # Render completion screen on top if active
+            if self.show_completion_screen and self.completion_screen:
+                self.completion_screen.render(self.screen)
         
         # Show FPS if debug is enabled
         if self.config.debug.show_fps:
@@ -104,6 +120,21 @@ class Game:
         """Show the main menu."""
         self.show_main_menu = True
         self.main_menu.active = True
+        self.show_completion_screen = False
+        self.completion_screen = None
+    
+    def show_level_completion(self, score: int, rank: str, level_id: int) -> None:
+        """
+        Show the level completion screen.
+        
+        Args:
+            score: Score achieved in the level
+            rank: Rank achieved (Bronze, Silver, Gold)
+            level_id: ID of the completed level
+        """
+        from ui.completion_screen import CompletionScreen
+        self.completion_screen = CompletionScreen(self, score, rank, level_id)
+        self.show_completion_screen = True
     
     def quit(self) -> None:
         """Quit the game."""
