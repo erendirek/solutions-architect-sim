@@ -378,6 +378,23 @@ class BaseLevel(ABC):
         if unnecessary_services:
             score_adjustment += len(unnecessary_services) * self.game.config.game.scoring.unnecessary_service
         
+        # Run architecture validation for level-specific requirements
+        from tests.architecture_validator import ArchitectureValidator
+        is_valid, message, issues = ArchitectureValidator.validate_architecture(
+            self.level_id,
+            self.game.state.placed_services,
+            self.game.state.connections,
+            self.required_services,
+            self.optional_services
+        )
+        
+        if not is_valid:
+            return (
+                False,
+                message,
+                score_adjustment
+            )
+        
         # Run security audit
         from tests.security_audit import SecurityAudit
         security_issues = SecurityAudit.audit_architecture(
