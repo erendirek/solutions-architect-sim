@@ -5,6 +5,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import pygame
 
+from ui.aws_theme import AWSColors, AWSStyling
 from ui.button import Button
 
 
@@ -28,10 +29,10 @@ class CompletionScreen:
         self.active = True
         
         # Create fonts
-        self.title_font = pygame.font.SysFont("Arial", 48, bold=True)
-        self.heading_font = pygame.font.SysFont("Arial", 32, bold=True)
-        self.text_font = pygame.font.SysFont("Arial", 24)
-        self.info_font = pygame.font.SysFont("Arial", 20)
+        self.title_font = pygame.font.SysFont(AWSStyling.FONT_FAMILY, AWSStyling.FONT_SIZE_XXLARGE, bold=True)
+        self.heading_font = pygame.font.SysFont(AWSStyling.FONT_FAMILY, AWSStyling.FONT_SIZE_XLARGE, bold=True)
+        self.text_font = pygame.font.SysFont(AWSStyling.FONT_FAMILY, AWSStyling.FONT_SIZE_LARGE)
+        self.info_font = pygame.font.SysFont(AWSStyling.FONT_FAMILY, AWSStyling.FONT_SIZE_MEDIUM)
         
         # Calculate layout
         self.window_width = self.game.config.window.width
@@ -42,6 +43,12 @@ class CompletionScreen:
         
         # Determine if next level is available
         self.next_level_available = (level_id < 10) and (level_id + 1 in self.game.state.unlocked_levels)
+        
+        # Animation state
+        self.animation_progress = 0.0  # 0.0 to 1.0
+        self.animation_speed = 0.05  # Progress per frame
+        self.particles = []
+        self._create_particles()
     
     def _create_buttons(self) -> None:
         """Create UI buttons for the completion screen."""
@@ -56,7 +63,8 @@ class CompletionScreen:
                 50
             ),
             text="Main Menu",
-            callback=self._on_menu_click
+            callback=self._on_menu_click,
+            style="secondary"
         )
         self.buttons.append(menu_button)
         
@@ -69,18 +77,70 @@ class CompletionScreen:
                 50
             ),
             text="Next Level",
-            callback=self._on_next_click
+            callback=self._on_next_click,
+            style="primary"
         )
         self.buttons.append(next_button)
         self.next_button = next_button
     
+    def _create_particles(self) -> None:
+        """Create celebration particles."""
+        import random
+        
+        # Create particles based on rank
+        particle_count = 50
+        if self.rank == "Gold":
+            particle_count = 100
+            colors = [AWSColors.RIND, AWSColors.SMILE_ORANGE]
+        elif self.rank == "Silver":
+            colors = [(192, 192, 192), (150, 150, 150)]
+        else:  # Bronze
+            colors = [(205, 127, 50), (160, 100, 40)]
+        
+        # Create particles
+        for _ in range(particle_count):
+            self.particles.append({
+                "x": self.window_width // 2,
+                "y": self.window_height // 2,
+                "vx": random.uniform(-5, 5),
+                "vy": random.uniform(-8, -2),
+                "radius": random.uniform(2, 6),
+                "color": random.choice(colors),
+                "life": random.uniform(0.5, 1.0)  # Life percentage (1.0 = full life)
+            })
+    
     def update(self) -> None:
         """Update the completion screen state."""
+        # Update animation progress
+        if self.animation_progress < 1.0:
+            self.animation_progress += self.animation_speed
+            if self.animation_progress > 1.0:
+                self.animation_progress = 1.0
+        
         # Update next level button state
         if not self.next_level_available:
-            self.next_button.bg_color = (150, 150, 150)  # Gray for disabled
-        else:
-            self.next_button.bg_color = (100, 100, 240)  # Blue for enabled
+            self.next_button.disabled = True
+        
+        # Update particles
+        import random
+        for particle in self.particles:
+            # Apply gravity
+            particle["vy"] += 0.1
+            
+            # Update position
+            particle["x"] += particle["vx"]
+            particle["y"] += particle["vy"]
+            
+            # Update life
+            particle["life"] -= 0.005
+            
+            # Respawn dead particles
+            if particle["life"] <= 0:
+                particle["x"] = self.window_width // 2
+                particle["y"] = self.window_height // 2
+                particle["vx"] = random.uniform(-5, 5)
+                particle["vy"] = random.uniform(-8, -2)
+                particle["life"] = random.uniform(0.5, 1.0)
     
     def render(self, surface: pygame.Surface) -> None:
         """
@@ -89,52 +149,109 @@ class CompletionScreen:
         Args:
             surface: Pygame surface to render on
         """
-        # Draw background overlay
+        # Draw background overlay with animation
         overlay = pygame.Surface((self.window_width, self.window_height), pygame.SRCALPHA)
-        overlay.fill((0, 0, 0, 180))  # Semi-transparent black
+        alpha = int(180 * self.animation_progress)
+        overlay.fill((0, 0, 0, alpha))  # Semi-transparent black
         surface.blit(overlay, (0, 0))
         
-        # Draw completion panel
+        # Draw completion panel with animation
         panel_width = 600
         panel_height = 400
         panel_rect = pygame.Rect(
             (self.window_width - panel_width) // 2,
-            (self.window_height - panel_height) // 2,
+            (self.window_height - panel_height) // 2 - int(50 * (1 - self.animation_progress)),
             panel_width,
             panel_height
         )
-        pygame.draw.rect(surface, (240, 240, 240), panel_rect)
-        pygame.draw.rect(surface, (100, 100, 100), panel_rect, 2)
         
-        # Draw completion title
-        title_text = self.title_font.render("Level Complete!", True, (0, 0, 0))
-        title_rect = title_text.get_rect(centerx=self.window_width // 2, top=panel_rect.top + 30)
-        surface.blit(title_text, title_rect)
+        # Draw panel background with gradient
+        self._draw_gradient_panel(surface, panel_rect)
         
-        # Draw level info
-        level_text = self.heading_font.render(f"Level {self.level_id}", True, (0, 0, 0))
-        level_rect = level_text.get_rect(centerx=self.window_width // 2, top=title_rect.bottom + 30)
-        surface.blit(level_text, level_rect)
+        # Draw particles
+        for particle in self.particles:
+            # Skip if not visible yet
+            if self.animation_progress < 0.8:
+                continue
+                
+            # Calculate alpha based on life
+            alpha = int(255 * particle["life"])
+            color_with_alpha = (*particle["color"], alpha)
+            
+            # Draw particle
+            pygame.draw.circle(
+                surface,
+                color_with_alpha,
+                (int(particle["x"]), int(particle["y"])),
+                int(particle["radius"])
+            )
         
-        # Draw score
-        score_text = self.text_font.render(f"Score: {self.score}", True, (0, 0, 0))
-        score_rect = score_text.get_rect(centerx=self.window_width // 2, top=level_rect.bottom + 30)
-        surface.blit(score_text, score_rect)
+        # Skip the rest if animation is not far enough
+        if self.animation_progress < 0.3:
+            return
         
-        # Draw rank with color based on rank
-        rank_color = (0, 0, 0)
+        # Draw completion title with animation
+        title_alpha = int(min(255, 255 * (self.animation_progress - 0.3) / 0.2))
+        self._render_text_with_alpha(
+            surface,
+            "Level Complete!",
+            self.title_font,
+            AWSColors.SMILE_ORANGE,
+            self.window_width // 2,
+            panel_rect.top + 40,
+            title_alpha
+        )
+        
+        # Skip the rest if animation is not far enough
+        if self.animation_progress < 0.5:
+            return
+        
+        # Draw level info with animation
+        level_alpha = int(min(255, 255 * (self.animation_progress - 0.5) / 0.2))
+        self._render_text_with_alpha(
+            surface,
+            f"Level {self.level_id}",
+            self.heading_font,
+            AWSColors.WHITE,
+            self.window_width // 2,
+            panel_rect.top + 100,
+            level_alpha
+        )
+        
+        # Draw score with animation
+        score_alpha = int(min(255, 255 * (self.animation_progress - 0.6) / 0.2))
+        self._render_text_with_alpha(
+            surface,
+            f"Score: {self.score}",
+            self.text_font,
+            AWSColors.WHITE,
+            self.window_width // 2,
+            panel_rect.top + 150,
+            score_alpha
+        )
+        
+        # Draw rank with color based on rank and animation
+        rank_alpha = int(min(255, 255 * (self.animation_progress - 0.7) / 0.2))
+        rank_color = AWSColors.WHITE
         if self.rank == "Gold":
-            rank_color = (212, 175, 55)  # Gold color
+            rank_color = AWSColors.RIND
         elif self.rank == "Silver":
             rank_color = (192, 192, 192)  # Silver color
         elif self.rank == "Bronze":
             rank_color = (205, 127, 50)  # Bronze color
             
-        rank_text = self.heading_font.render(f"{self.rank} Architect", True, rank_color)
-        rank_rect = rank_text.get_rect(centerx=self.window_width // 2, top=score_rect.bottom + 20)
-        surface.blit(rank_text, rank_rect)
+        self._render_text_with_alpha(
+            surface,
+            f"{self.rank} Architect",
+            self.heading_font,
+            rank_color,
+            self.window_width // 2,
+            panel_rect.top + 200,
+            rank_alpha
+        )
         
-        # Draw congratulatory message
+        # Draw congratulatory message with animation
+        message_alpha = int(min(255, 255 * (self.animation_progress - 0.8) / 0.2))
         if self.rank == "Gold":
             message = "Outstanding work! You've achieved the highest rank!"
         elif self.rank == "Silver":
@@ -142,13 +259,88 @@ class CompletionScreen:
         else:
             message = "Good start! Try optimizing your solution for a higher rank."
             
-        message_text = self.info_font.render(message, True, (0, 0, 0))
-        message_rect = message_text.get_rect(centerx=self.window_width // 2, top=rank_rect.bottom + 20)
-        surface.blit(message_text, message_rect)
+        self._render_text_with_alpha(
+            surface,
+            message,
+            self.info_font,
+            AWSColors.WHITE,
+            self.window_width // 2,
+            panel_rect.top + 250,
+            message_alpha
+        )
         
-        # Draw buttons
-        for button in self.buttons:
-            button.render(surface)
+        # Draw buttons with animation
+        if self.animation_progress > 0.9:
+            for button in self.buttons:
+                button.render(surface)
+    
+    def _draw_gradient_panel(self, surface: pygame.Surface, rect: pygame.Rect) -> None:
+        """
+        Draw a gradient panel.
+        
+        Args:
+            surface: Pygame surface to render on
+            rect: Rectangle defining the panel position and size
+        """
+        # Create a surface for the gradient
+        panel = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+        
+        # Define gradient colors
+        top_color = AWSColors.SQUID_INK
+        bottom_color = (top_color[0] + 20, top_color[1] + 20, top_color[2] + 20)
+        
+        # Draw gradient
+        for y in range(rect.height):
+            # Calculate color for this line
+            ratio = y / rect.height
+            color = (
+                int(top_color[0] * (1 - ratio) + bottom_color[0] * ratio),
+                int(top_color[1] * (1 - ratio) + bottom_color[1] * ratio),
+                int(top_color[2] * (1 - ratio) + bottom_color[2] * ratio),
+                int(220 * self.animation_progress)  # Alpha based on animation
+            )
+            pygame.draw.line(panel, color, (0, y), (rect.width, y))
+        
+        # Draw the panel
+        surface.blit(panel, rect)
+        
+        # Draw border
+        border_alpha = int(255 * self.animation_progress)
+        border_color = (*AWSColors.SMILE_ORANGE, border_alpha)
+        pygame.draw.rect(
+            surface, 
+            border_color, 
+            rect, 
+            2, 
+            border_radius=AWSStyling.BORDER_RADIUS_LARGE
+        )
+    
+    def _render_text_with_alpha(
+        self,
+        surface: pygame.Surface,
+        text: str,
+        font: pygame.font.Font,
+        color: Tuple[int, int, int],
+        x: int,
+        y: int,
+        alpha: int
+    ) -> None:
+        """
+        Render text with alpha transparency.
+        
+        Args:
+            surface: Pygame surface to render on
+            text: Text to render
+            font: Font to use
+            color: Text color (RGB)
+            x: X position (center)
+            y: Y position (top)
+            alpha: Alpha value (0-255)
+        """
+        text_surface = font.render(text, True, color)
+        text_surface.set_alpha(alpha)
+        text_rect = text_surface.get_rect(centerx=x, top=y)
+        surface.blit(text_surface, text_rect)
     
     def handle_mouse_down(self, event: pygame.event.Event) -> bool:
         """
@@ -160,6 +352,10 @@ class CompletionScreen:
         Returns:
             True if the event was handled, False otherwise
         """
+        # Only handle events if animation is complete
+        if self.animation_progress < 1.0:
+            return False
+            
         # Check button clicks
         for button in self.buttons:
             if button.rect.collidepoint(event.pos):

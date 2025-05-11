@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 import pygame
 
 from core.state import GameState, GameMode
+from ui.aws_theme import AWSColors, AWSStyling
 from ui.button import Button
 
 
@@ -26,21 +27,47 @@ class MainMenu:
         self.time_trial_mode = False
         
         # Create fonts
-        self.title_font = pygame.font.SysFont("Arial", 48, bold=True)
-        self.heading_font = pygame.font.SysFont("Arial", 28, bold=True)
-        self.text_font = pygame.font.SysFont("Arial", 18)
-        self.level_font = pygame.font.SysFont("Arial", 20, bold=True)
-        self.info_font = pygame.font.SysFont("Arial", 16)
+        self.title_font = pygame.font.SysFont(AWSStyling.FONT_FAMILY, AWSStyling.FONT_SIZE_XXLARGE, bold=True)
+        self.heading_font = pygame.font.SysFont(AWSStyling.FONT_FAMILY, AWSStyling.FONT_SIZE_XLARGE, bold=True)
+        self.text_font = pygame.font.SysFont(AWSStyling.FONT_FAMILY, AWSStyling.FONT_SIZE_MEDIUM)
+        self.level_font = pygame.font.SysFont(AWSStyling.FONT_FAMILY, AWSStyling.FONT_SIZE_LARGE, bold=True)
+        self.info_font = pygame.font.SysFont(AWSStyling.FONT_FAMILY, AWSStyling.FONT_SIZE_NORMAL)
         
         # Calculate layout
         self.window_width = self.game.config.window.width
         self.window_height = self.game.config.window.height
+        
+        # Animation state
+        self.animation_progress = 0.0
+        self.animation_speed = 0.05
         
         # Create buttons
         self._create_buttons()
         
         # Load level data
         self._load_level_data()
+        
+        # Create AWS logo
+        self.aws_logo = self._create_aws_logo()
+    
+    def _create_aws_logo(self) -> pygame.Surface:
+        """Create a simple AWS logo."""
+        logo_width = 120
+        logo_height = 60
+        logo = pygame.Surface((logo_width, logo_height), pygame.SRCALPHA)
+        
+        # Draw "AWS" text
+        font = pygame.font.SysFont(AWSStyling.FONT_FAMILY, 36, bold=True)
+        text = font.render("AWS", True, AWSColors.WHITE)
+        text_rect = text.get_rect(center=(logo_width // 2, logo_height // 2))
+        
+        # Draw orange background
+        pygame.draw.rect(logo, AWSColors.SMILE_ORANGE, (0, 0, logo_width, logo_height), border_radius=5)
+        
+        # Draw text
+        logo.blit(text, text_rect)
+        
+        return logo
     
     def _create_buttons(self) -> None:
         """Create UI buttons for the main menu."""
@@ -55,7 +82,8 @@ class MainMenu:
                 50
             ),
             text="Start Level",
-            callback=self._on_start_click
+            callback=self._on_start_click,
+            style="primary"
         )
         self.buttons.append(start_button)
         
@@ -69,7 +97,7 @@ class MainMenu:
             ),
             text="Tutorial Mode: OFF",
             callback=self._on_tutorial_click,
-            bg_color=(100, 100, 180)
+            style="secondary"
         )
         self.buttons.append(tutorial_button)
         self.tutorial_button = tutorial_button
@@ -84,7 +112,7 @@ class MainMenu:
             ),
             text="Time Trial: OFF",
             callback=self._on_time_trial_click,
-            bg_color=(100, 100, 180)
+            style="secondary"
         )
         self.buttons.append(time_trial_button)
         self.time_trial_button = time_trial_button
@@ -103,12 +131,21 @@ class MainMenu:
             x = start_x + col * (level_button_width + 20)
             y = start_y + row * (level_button_height + 20)
             
+            # Determine if level is unlocked
+            is_unlocked = i in self.game.state.unlocked_levels
+            is_completed = i in self.game.state.completed_levels
+            
+            # Set button style based on status
+            style = "secondary"
+            if not is_unlocked:
+                style = "disabled"
+            
             level_button = Button(
                 rect=pygame.Rect(x, y, level_button_width, level_button_height),
                 text=str(i),
                 callback=lambda level=i: self._on_level_click(level),
-                bg_color=(80, 80, 200),
-                hover_color=(100, 100, 220)
+                style=style,
+                disabled=not is_unlocked
             )
             self.buttons.append(level_button)
             self.level_buttons.append(level_button)
@@ -127,42 +164,61 @@ class MainMenu:
     
     def update(self) -> None:
         """Update the main menu state."""
+        # Update animation progress
+        if self.animation_progress < 1.0:
+            self.animation_progress += self.animation_speed
+            if self.animation_progress > 1.0:
+                self.animation_progress = 1.0
+        
         # Update button states based on unlocked levels
         for i, button in enumerate(self.level_buttons):
             level_id = i + 1
             is_unlocked = level_id in self.game.state.unlocked_levels
+            is_completed = level_id in self.game.state.completed_levels
+            is_selected = level_id == self.selected_level
             
-            # Set button color based on unlock status
-            if level_id == self.selected_level:
-                button.bg_color = (100, 180, 100)  # Green for selected
-                button.hover_color = (120, 200, 120)
+            # Set button style based on status
+            if is_selected:
+                button.bg_color = AWSColors.SMILE_ORANGE
+                button.hover_color = (230, 138, 0)  # Darker orange
+            elif is_completed:
+                button.bg_color = AWSColors.SUCCESS
+                button.hover_color = (48, 155, 68)  # Darker green
             elif is_unlocked:
-                button.bg_color = (80, 80, 200)  # Blue for unlocked
-                button.hover_color = (100, 100, 220)
+                button.bg_color = AWSColors.BUTTON_SECONDARY
+                button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
             else:
-                button.bg_color = (150, 150, 150)  # Gray for locked
-                button.hover_color = (170, 170, 170)
+                button.bg_color = AWSColors.BUTTON_DISABLED
+                button.hover_color = AWSColors.BUTTON_DISABLED
+                button.disabled = True
         
-        # Update mode toggle button colors based on state
+        # Update mode toggle button states
         # Tutorial button
         if self.tutorial_mode:
-            self.tutorial_button.bg_color = (100, 180, 100)  # Green for active
-            self.tutorial_button.hover_color = (120, 200, 120)
+            self.tutorial_button.text = "Tutorial Mode: ON"
+            self.tutorial_button.bg_color = AWSColors.SUCCESS
+            self.tutorial_button.hover_color = (48, 155, 68)  # Darker green
         elif self.selected_level > 2:  # Only levels 1-2 have tutorials
             self.tutorial_mode = False
-            self.tutorial_button.bg_color = (150, 150, 150)  # Gray for disabled
-            self.tutorial_button.hover_color = (170, 170, 170)
+            self.tutorial_button.text = "Tutorial Mode: OFF"
+            self.tutorial_button.bg_color = AWSColors.BUTTON_DISABLED
+            self.tutorial_button.hover_color = AWSColors.BUTTON_DISABLED
+            self.tutorial_button.disabled = True
         else:
-            self.tutorial_button.bg_color = (100, 100, 180)  # Blue for available but inactive
-            self.tutorial_button.hover_color = (120, 120, 200)
+            self.tutorial_button.text = "Tutorial Mode: OFF"
+            self.tutorial_button.bg_color = AWSColors.BUTTON_SECONDARY
+            self.tutorial_button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
+            self.tutorial_button.disabled = False
             
         # Time trial button
         if self.time_trial_mode:
-            self.time_trial_button.bg_color = (100, 180, 100)  # Green for active
-            self.time_trial_button.hover_color = (120, 200, 120)
+            self.time_trial_button.text = "Time Trial: ON"
+            self.time_trial_button.bg_color = AWSColors.SUCCESS
+            self.time_trial_button.hover_color = (48, 155, 68)  # Darker green
         else:
-            self.time_trial_button.bg_color = (100, 100, 180)  # Blue for inactive
-            self.time_trial_button.hover_color = (120, 120, 200)
+            self.time_trial_button.text = "Time Trial: OFF"
+            self.time_trial_button.bg_color = AWSColors.BUTTON_SECONDARY
+            self.time_trial_button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
     
     def render(self, surface: pygame.Surface) -> None:
         """
@@ -171,36 +227,55 @@ class MainMenu:
         Args:
             surface: Pygame surface to render on
         """
-        # Draw background
-        surface.fill((240, 240, 240))
+        # Draw background gradient
+        self._draw_background(surface)
         
-        # Draw title
-        title_text = self.title_font.render("Solutions Architect Simulator", True, (0, 0, 0))
+        # Draw AWS logo
+        logo_rect = self.aws_logo.get_rect(topleft=(20, 20))
+        surface.blit(self.aws_logo, logo_rect)
+        
+        # Draw title with animation
+        title_alpha = int(min(255, 255 * self.animation_progress / 0.3))
+        title_text = self.title_font.render("Solutions Architect Simulator", True, AWSColors.WHITE)
+        title_text.set_alpha(title_alpha)
         title_rect = title_text.get_rect(centerx=self.window_width // 2, top=30)
         surface.blit(title_text, title_rect)
         
-        # Draw level selection heading
-        heading_text = self.heading_font.render("Select Level", True, (0, 0, 0))
-        heading_rect = heading_text.get_rect(centerx=self.window_width // 2, top=120)
-        surface.blit(heading_text, heading_rect)
+        # Draw level selection heading with animation
+        if self.animation_progress > 0.2:
+            heading_alpha = int(min(255, 255 * (self.animation_progress - 0.2) / 0.3))
+            heading_text = self.heading_font.render("Select Level", True, AWSColors.WHITE)
+            heading_text.set_alpha(heading_alpha)
+            heading_rect = heading_text.get_rect(centerx=self.window_width // 2, top=120)
+            surface.blit(heading_text, heading_rect)
         
-        # Draw buttons
-        for button in self.buttons:
-            button.render(surface)
+        # Draw buttons with animation
+        if self.animation_progress > 0.3:
+            for button in self.buttons:
+                button.render(surface)
         
-        # Draw selected level info
-        if self.selected_level and 1 <= self.selected_level <= len(self.level_data):
+        # Draw selected level info with animation
+        if self.animation_progress > 0.5 and self.selected_level and 1 <= self.selected_level <= len(self.level_data):
             level_info = self.level_data[self.selected_level - 1]
+            
+            # Create a panel for level info
+            panel_rect = pygame.Rect(
+                self.window_width // 2 - 300,
+                self.window_height - 320,
+                600,
+                120
+            )
+            self._draw_panel(surface, panel_rect)
             
             # Draw level title
             level_title_text = self.level_font.render(
                 f"Level {level_info['id']}: {level_info['title']}",
                 True,
-                (0, 0, 0)
+                AWSColors.WHITE
             )
             level_title_rect = level_title_text.get_rect(
                 centerx=self.window_width // 2,
-                top=self.window_height - 300
+                top=panel_rect.top + 10
             )
             surface.blit(level_title_text, level_title_rect)
             
@@ -208,39 +283,127 @@ class MainMenu:
             description_lines = self._wrap_text(
                 level_info["description"],
                 self.info_font,
-                self.window_width - 200
+                panel_rect.width - 40
             )
             y = level_title_rect.bottom + 10
             for line in description_lines:
-                line_text = self.info_font.render(line, True, (0, 0, 0))
+                line_text = self.info_font.render(line, True, AWSColors.LIGHT_GRAY)
                 line_rect = line_text.get_rect(centerx=self.window_width // 2, top=y)
                 surface.blit(line_text, line_rect)
                 y += line_rect.height + 5
             
-            # Draw level requirements
-            required_services = ", ".join(level_info["required_services"])
-            req_text = self.info_font.render(
-                f"Required Services: {required_services}",
-                True,
-                (0, 0, 0)
+            # Draw required services in a separate panel
+            services_panel_rect = pygame.Rect(
+                self.window_width // 2 - 300,
+                panel_rect.bottom + 10,
+                600,
+                60
             )
-            req_rect = req_text.get_rect(centerx=self.window_width // 2, top=y + 10)
+            self._draw_panel(surface, services_panel_rect)
+            
+            # Draw required services
+            required_services = ", ".join(level_info["required_services"])
+            req_label = self.info_font.render("Required Services:", True, AWSColors.SMILE_ORANGE)
+            req_label_rect = req_label.get_rect(
+                left=services_panel_rect.left + 20,
+                top=services_panel_rect.top + 10
+            )
+            surface.blit(req_label, req_label_rect)
+            
+            req_text = self.info_font.render(required_services, True, AWSColors.WHITE)
+            req_rect = req_text.get_rect(
+                left=services_panel_rect.left + 20,
+                top=req_label_rect.bottom + 5
+            )
             surface.blit(req_text, req_rect)
             
-            # Draw completion status
+            # Draw completion status if completed
             if self.selected_level in self.game.state.completed_levels:
                 score = self.game.state.completed_levels[self.selected_level]
                 rank = self.game.state.get_rank_for_score(score)
-                completion_text = self.info_font.render(
-                    f"Completed with {score} points - {rank} Architect",
-                    True,
-                    (0, 100, 0)
+                
+                # Determine rank color
+                rank_color = AWSColors.RIND  # Default gold
+                if rank == "Silver":
+                    rank_color = (192, 192, 192)  # Silver
+                elif rank == "Bronze":
+                    rank_color = (205, 127, 50)  # Bronze
+                
+                # Create completion badge
+                badge_rect = pygame.Rect(
+                    services_panel_rect.right - 150,
+                    services_panel_rect.top + 10,
+                    130,
+                    40
                 )
-                completion_rect = completion_text.get_rect(
-                    centerx=self.window_width // 2,
-                    top=req_rect.bottom + 10
+                pygame.draw.rect(surface, rank_color, badge_rect, border_radius=10)
+                pygame.draw.rect(surface, AWSColors.WHITE, badge_rect, 2, border_radius=10)
+                
+                # Draw rank text
+                rank_text = self.info_font.render(f"{rank} Architect", True, AWSColors.SQUID_INK)
+                rank_rect = rank_text.get_rect(center=badge_rect.center)
+                surface.blit(rank_text, rank_rect)
+                
+                # Draw score
+                score_text = self.info_font.render(f"Score: {score}", True, AWSColors.WHITE)
+                score_rect = score_text.get_rect(
+                    right=badge_rect.left - 10,
+                    centery=badge_rect.centery
                 )
-                surface.blit(completion_text, completion_rect)
+                surface.blit(score_text, score_rect)
+    
+    def _draw_background(self, surface: pygame.Surface) -> None:
+        """Draw a gradient background."""
+        # Create gradient from top to bottom
+        for y in range(self.window_height):
+            # Calculate color for this line
+            ratio = y / self.window_height
+            
+            # Gradient from dark blue to slightly lighter blue
+            color = (
+                int(AWSColors.SQUID_INK[0] * (1 - ratio) + (AWSColors.SQUID_INK[0] + 20) * ratio),
+                int(AWSColors.SQUID_INK[1] * (1 - ratio) + (AWSColors.SQUID_INK[1] + 20) * ratio),
+                int(AWSColors.SQUID_INK[2] * (1 - ratio) + (AWSColors.SQUID_INK[2] + 20) * ratio)
+            )
+            
+            pygame.draw.line(surface, color, (0, y), (self.window_width, y))
+        
+        # Draw subtle grid pattern
+        grid_color = (AWSColors.SQUID_INK[0] + 10, AWSColors.SQUID_INK[1] + 10, AWSColors.SQUID_INK[2] + 10)
+        grid_spacing = 30
+        
+        # Draw horizontal grid lines
+        for y in range(0, self.window_height, grid_spacing):
+            pygame.draw.line(surface, grid_color, (0, y), (self.window_width, y), 1)
+        
+        # Draw vertical grid lines
+        for x in range(0, self.window_width, grid_spacing):
+            pygame.draw.line(surface, grid_color, (x, 0), (x, self.window_height), 1)
+    
+    def _draw_panel(self, surface: pygame.Surface, rect: pygame.Rect) -> None:
+        """Draw a semi-transparent panel with rounded corners."""
+        panel = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+        panel_color = (*AWSColors.PANEL_DARK, 200)  # Semi-transparent
+        
+        # Draw panel background
+        pygame.draw.rect(
+            panel, 
+            panel_color, 
+            panel.get_rect(), 
+            border_radius=AWSStyling.BORDER_RADIUS_MEDIUM
+        )
+        
+        # Draw border
+        pygame.draw.rect(
+            panel, 
+            AWSColors.SMILE_ORANGE, 
+            panel.get_rect(), 
+            2, 
+            border_radius=AWSStyling.BORDER_RADIUS_MEDIUM
+        )
+        
+        # Blit panel to surface
+        surface.blit(panel, rect)
     
     def handle_mouse_down(self, event: pygame.event.Event) -> bool:
         """
@@ -252,6 +415,10 @@ class MainMenu:
         Returns:
             True if the event was handled, False otherwise
         """
+        # Only handle events if animation is complete
+        if self.animation_progress < 0.5:
+            return False
+            
         # Check button clicks
         for button in self.buttons:
             if button.rect.collidepoint(event.pos):
@@ -306,7 +473,6 @@ class MainMenu:
             self.game.state.time_remaining = float(self.game.config.game.time_trial_seconds)
             # Reset time manager
             self.game.time_manager.reset()
-            print(f"Starting Time Trial mode with {self.game.state.time_remaining} seconds")
         else:
             self.game.state.mode = GameMode.NORMAL
             self.game.state.time_remaining = None
@@ -326,18 +492,18 @@ class MainMenu:
             # Update button appearance immediately
             if self.tutorial_mode:
                 self.tutorial_button.text = "Tutorial Mode: ON"
-                self.tutorial_button.bg_color = (100, 180, 100)  # Green for active
-                self.tutorial_button.hover_color = (120, 200, 120)
+                self.tutorial_button.bg_color = AWSColors.SUCCESS
+                self.tutorial_button.hover_color = (48, 155, 68)  # Darker green
                 
                 # Disable time trial mode
                 self.time_trial_mode = False
                 self.time_trial_button.text = "Time Trial: OFF"
-                self.time_trial_button.bg_color = (100, 100, 180)  # Blue for inactive
-                self.time_trial_button.hover_color = (120, 120, 200)
+                self.time_trial_button.bg_color = AWSColors.BUTTON_SECONDARY
+                self.time_trial_button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
             else:
                 self.tutorial_button.text = "Tutorial Mode: OFF"
-                self.tutorial_button.bg_color = (100, 100, 180)  # Blue for inactive
-                self.tutorial_button.hover_color = (120, 120, 200)
+                self.tutorial_button.bg_color = AWSColors.BUTTON_SECONDARY
+                self.tutorial_button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
     
     def _on_time_trial_click(self) -> None:
         """Handle click on the time trial mode button."""
@@ -346,23 +512,24 @@ class MainMenu:
         # Update button appearance immediately
         if self.time_trial_mode:
             self.time_trial_button.text = "Time Trial: ON"
-            self.time_trial_button.bg_color = (100, 180, 100)  # Green for active
-            self.time_trial_button.hover_color = (120, 200, 120)
+            self.time_trial_button.bg_color = AWSColors.SUCCESS
+            self.time_trial_button.hover_color = (48, 155, 68)  # Darker green
             
             # Disable tutorial mode
             self.tutorial_mode = False
             self.tutorial_button.text = "Tutorial Mode: OFF"
-            self.tutorial_button.bg_color = (100, 100, 180)  # Blue for inactive
-            self.tutorial_button.hover_color = (120, 120, 200)
+            self.tutorial_button.bg_color = AWSColors.BUTTON_SECONDARY
+            self.tutorial_button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
             
             # Gray out tutorial button if not available for this level
             if self.selected_level > 2:
-                self.tutorial_button.bg_color = (150, 150, 150)  # Gray for disabled
-                self.tutorial_button.hover_color = (170, 170, 170)
+                self.tutorial_button.bg_color = AWSColors.BUTTON_DISABLED
+                self.tutorial_button.hover_color = AWSColors.BUTTON_DISABLED
+                self.tutorial_button.disabled = True
         else:
             self.time_trial_button.text = "Time Trial: OFF"
-            self.time_trial_button.bg_color = (100, 100, 180)  # Blue for inactive
-            self.time_trial_button.hover_color = (120, 120, 200)
+            self.time_trial_button.bg_color = AWSColors.BUTTON_SECONDARY
+            self.time_trial_button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
     
     def _wrap_text(self, text: str, font: pygame.font.Font, max_width: int) -> List[str]:
         """
