@@ -95,7 +95,7 @@ class Game:
     def render(self) -> None:
         """Render the game to the screen."""
         # Clear the screen
-        self.screen.fill((240, 240, 240))  # Light gray background
+        self.screen.fill((25, 35, 50))  # Daha koyu arka plan - AWSColors.SQUID_INK
         
         if self.show_main_menu:
             # Render main menu

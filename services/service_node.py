@@ -40,12 +40,64 @@ class ServiceNode:
         Args:
             surface: Pygame surface to render on
         """
+        # Draw a glowing effect behind the icon
+        glow_size = 4
+        glow_rect = pygame.Rect(
+            self.rect.left - glow_size,
+            self.rect.top - glow_size,
+            self.rect.width + glow_size * 2,
+            self.rect.height + glow_size * 2
+        )
+        
+        # Draw outer glow (orange)
+        pygame.draw.rect(
+            surface, 
+            (255, 153, 0, 150),  # AWS Orange with transparency
+            glow_rect,
+            border_radius=10
+        )
+        
+        # Draw inner border (darker)
+        border_rect = pygame.Rect(
+            self.rect.left - 2,
+            self.rect.top - 2,
+            self.rect.width + 4,
+            self.rect.height + 4
+        )
+        pygame.draw.rect(
+            surface, 
+            (50, 60, 70),  # Dark border
+            border_rect,
+            border_radius=8
+        )
+        
+        # Draw icon background (lighter)
+        bg_rect = pygame.Rect(
+            self.rect.left - 1,
+            self.rect.top - 1,
+            self.rect.width + 2,
+            self.rect.height + 2
+        )
+        pygame.draw.rect(
+            surface, 
+            (240, 240, 240),  # Light background
+            bg_rect,
+            border_radius=6
+        )
+        
         # Draw icon
         surface.blit(self.icon, self.rect)
         
-        # Draw service name
-        font = pygame.font.SysFont("Arial", 12)
-        text = font.render(self.service_info.display_name, True, (0, 0, 0))
+        # Draw service name with shadow for better visibility
+        font = pygame.font.SysFont("Arial", 12, bold=True)
+        
+        # Draw text shadow
+        shadow_text = font.render(self.service_info.display_name, True, (30, 30, 30))
+        shadow_rect = shadow_text.get_rect(centerx=self.rect.centerx + 1, top=self.rect.bottom + 3)
+        surface.blit(shadow_text, shadow_rect)
+        
+        # Draw text
+        text = font.render(self.service_info.display_name, True, (255, 255, 255))
         text_rect = text.get_rect(centerx=self.rect.centerx, top=self.rect.bottom + 2)
         surface.blit(text, text_rect)
     

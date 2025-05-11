@@ -99,9 +99,9 @@ class Button:
         border_radius = min(AWSStyling.BORDER_RADIUS_MEDIUM, self.rect.height // 2)
         pygame.draw.rect(surface, color, self.rect, border_radius=border_radius)
         
-        # Draw border
+        # Draw border with slightly thicker line for better visibility
         border_color = AWSColors.DARK_GRAY if not self.disabled else AWSColors.MEDIUM_GRAY
-        pygame.draw.rect(surface, border_color, self.rect, 1, border_radius=border_radius)
+        pygame.draw.rect(surface, border_color, self.rect, 2, border_radius=border_radius)
         
         # Update text surface if text has changed
         self.text_surface = self.font.render(self.text, True, self.text_color)

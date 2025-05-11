@@ -6,8 +6,8 @@ class AWSColors:
     """AWS color palette constants."""
     
     # Primary colors
-    SQUID_INK = (35, 47, 62)      # #232F3E - Dark blue/black
-    ANCHOR = (68, 68, 68)         # #444444 - Dark gray
+    SQUID_INK = (25, 35, 50)      # Daha koyu bir mavi/siyah
+    ANCHOR = (58, 58, 58)         # Daha koyu gri
     SMILE_ORANGE = (255, 153, 0)  # #FF9900 - AWS Orange
     
     # Secondary colors
@@ -30,17 +30,17 @@ class AWSColors:
     INFO = (51, 153, 204)         # #3399CC - Blue
     
     # Background colors
-    BACKGROUND_LIGHT = (248, 248, 248)  # #F8F8F8
-    BACKGROUND_DARK = (35, 47, 62)      # #232F3E
-    PANEL_LIGHT = (240, 240, 240)       # #F0F0F0
-    PANEL_DARK = (50, 60, 70)           # #323C46
+    BACKGROUND_LIGHT = (240, 240, 240)  # Biraz daha koyu
+    BACKGROUND_DARK = (25, 35, 50)      # Daha koyu mavi/siyah
+    PANEL_LIGHT = (230, 230, 230)       # Biraz daha koyu
+    PANEL_DARK = (40, 50, 60)           # Daha koyu panel
     
     # Button states
     BUTTON_PRIMARY = (255, 153, 0)      # #FF9900 - AWS Orange
     BUTTON_PRIMARY_HOVER = (230, 138, 0) # #E68A00 - Darker orange
     BUTTON_SECONDARY = (51, 153, 204)   # #3399CC - Blue
     BUTTON_SECONDARY_HOVER = (46, 138, 184) # #2E8AB8 - Darker blue
-    BUTTON_DISABLED = (204, 204, 204)   # #CCCCCC - Gray
+    BUTTON_DISABLED = (180, 180, 180)   # Daha koyu gri
 
 
 class AWSStyling:

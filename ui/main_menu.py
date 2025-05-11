@@ -77,7 +77,7 @@ class MainMenu:
         start_button = Button(
             rect=pygame.Rect(
                 self.window_width // 2 - 100,
-                self.window_height - 120,
+                self.window_height - 110,
                 200,
                 50
             ),
@@ -91,7 +91,7 @@ class MainMenu:
         tutorial_button = Button(
             rect=pygame.Rect(
                 self.window_width // 2 - 220,
-                self.window_height - 180,
+                self.window_height - 170,
                 200,
                 40
             ),
@@ -106,7 +106,7 @@ class MainMenu:
         time_trial_button = Button(
             rect=pygame.Rect(
                 self.window_width // 2 + 20,
-                self.window_height - 180,
+                self.window_height - 170,
                 200,
                 40
             ),
@@ -219,6 +219,21 @@ class MainMenu:
             self.time_trial_button.text = "Time Trial: OFF"
             self.time_trial_button.bg_color = AWSColors.BUTTON_SECONDARY
             self.time_trial_button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
+            
+        # Update text surfaces for both buttons to prevent text overlap
+        self.tutorial_button.text_surface = self.tutorial_button.font.render(
+            self.tutorial_button.text, True, self.tutorial_button.text_color
+        )
+        self.tutorial_button.text_rect = self.tutorial_button.text_surface.get_rect(
+            center=self.tutorial_button.rect.center
+        )
+        
+        self.time_trial_button.text_surface = self.time_trial_button.font.render(
+            self.time_trial_button.text, True, self.time_trial_button.text_color
+        )
+        self.time_trial_button.text_rect = self.time_trial_button.text_surface.get_rect(
+            center=self.time_trial_button.rect.center
+        )
     
     def render(self, surface: pygame.Surface) -> None:
         """
@@ -261,7 +276,7 @@ class MainMenu:
             # Create a panel for level info
             panel_rect = pygame.Rect(
                 self.window_width // 2 - 300,
-                self.window_height - 320,
+                self.window_height - 340,
                 600,
                 120
             )
@@ -299,6 +314,9 @@ class MainMenu:
                 600,
                 60
             )
+            # Ensure services panel doesn't overlap with mode buttons
+            if services_panel_rect.bottom > self.window_height - 190:
+                services_panel_rect.y = self.window_height - 240
             self._draw_panel(surface, services_panel_rect)
             
             # Draw required services
@@ -361,15 +379,15 @@ class MainMenu:
             
             # Gradient from dark blue to slightly lighter blue
             color = (
-                int(AWSColors.SQUID_INK[0] * (1 - ratio) + (AWSColors.SQUID_INK[0] + 20) * ratio),
-                int(AWSColors.SQUID_INK[1] * (1 - ratio) + (AWSColors.SQUID_INK[1] + 20) * ratio),
-                int(AWSColors.SQUID_INK[2] * (1 - ratio) + (AWSColors.SQUID_INK[2] + 20) * ratio)
+                int(AWSColors.SQUID_INK[0] * (1 - ratio) + (AWSColors.SQUID_INK[0] + 15) * ratio),
+                int(AWSColors.SQUID_INK[1] * (1 - ratio) + (AWSColors.SQUID_INK[1] + 15) * ratio),
+                int(AWSColors.SQUID_INK[2] * (1 - ratio) + (AWSColors.SQUID_INK[2] + 15) * ratio)
             )
             
             pygame.draw.line(surface, color, (0, y), (self.window_width, y))
         
         # Draw subtle grid pattern
-        grid_color = (AWSColors.SQUID_INK[0] + 10, AWSColors.SQUID_INK[1] + 10, AWSColors.SQUID_INK[2] + 10)
+        grid_color = (AWSColors.SQUID_INK[0] + 8, AWSColors.SQUID_INK[1] + 8, AWSColors.SQUID_INK[2] + 8)
         grid_spacing = 30
         
         # Draw horizontal grid lines
@@ -504,6 +522,21 @@ class MainMenu:
                 self.tutorial_button.text = "Tutorial Mode: OFF"
                 self.tutorial_button.bg_color = AWSColors.BUTTON_SECONDARY
                 self.tutorial_button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
+                
+            # Update text surfaces immediately to prevent text overlap
+            self.tutorial_button.text_surface = self.tutorial_button.font.render(
+                self.tutorial_button.text, True, self.tutorial_button.text_color
+            )
+            self.tutorial_button.text_rect = self.tutorial_button.text_surface.get_rect(
+                center=self.tutorial_button.rect.center
+            )
+            
+            self.time_trial_button.text_surface = self.time_trial_button.font.render(
+                self.time_trial_button.text, True, self.time_trial_button.text_color
+            )
+            self.time_trial_button.text_rect = self.time_trial_button.text_surface.get_rect(
+                center=self.time_trial_button.rect.center
+            )
     
     def _on_time_trial_click(self) -> None:
         """Handle click on the time trial mode button."""
@@ -530,6 +563,21 @@ class MainMenu:
             self.time_trial_button.text = "Time Trial: OFF"
             self.time_trial_button.bg_color = AWSColors.BUTTON_SECONDARY
             self.time_trial_button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
+            
+        # Update text surfaces immediately to prevent text overlap
+        self.tutorial_button.text_surface = self.tutorial_button.font.render(
+            self.tutorial_button.text, True, self.tutorial_button.text_color
+        )
+        self.tutorial_button.text_rect = self.tutorial_button.text_surface.get_rect(
+            center=self.tutorial_button.rect.center
+        )
+        
+        self.time_trial_button.text_surface = self.time_trial_button.font.render(
+            self.time_trial_button.text, True, self.time_trial_button.text_color
+        )
+        self.time_trial_button.text_rect = self.time_trial_button.text_surface.get_rect(
+            center=self.time_trial_button.rect.center
+        )
     
     def _wrap_text(self, text: str, font: pygame.font.Font, max_width: int) -> List[str]:
         """

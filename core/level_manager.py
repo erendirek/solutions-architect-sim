@@ -93,10 +93,10 @@ class LevelManager:
             if self.drawing_connection and self.connection_start and self.connection_end:
                 pygame.draw.line(
                     surface,
-                    (0, 0, 0),
+                    (255, 153, 0),  # AWSColors.SMILE_ORANGE - Daha görünür bağlantı çizgisi
                     self.connection_start,
                     self.connection_end,
-                    2
+                    3
                 )
             
             # Draw service being dragged from panel if applicable
