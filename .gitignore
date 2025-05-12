@@ -110,6 +110,6 @@ venv.bak/
 *.swo
 
 # Game specific
-assets/images/services/*.png
+# assets/images/services/*.png
 *.pyc
 .DS_Store
