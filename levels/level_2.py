@@ -89,6 +89,9 @@ class Level2(BaseLevel):
     
     def update(self) -> None:
         """Update the level state."""
+        # Call parent update to handle connection animations
+        super().update()
+        
         # Check if we should advance the tutorial step
         if self.game.state.mode.name == "TUTORIAL":
             if self.current_tutorial_step < len(self.tutorial_steps) - 1:
@@ -137,15 +140,8 @@ class Level2(BaseLevel):
         for node in self.placed_service_nodes:
             node.render(surface)
         
-        # Draw connections
-        for source, target in self.connections:
-            pygame.draw.line(
-                surface,
-                (0, 0, 0),
-                source.get_connection_point(),
-                target.get_connection_point(),
-                2
-            )
+        # Draw connections with animated styling
+        self.connection_animator.render(surface, self.connections)
         
         # Draw tutorial step if in tutorial mode
         if self.game.state.mode.name == "TUTORIAL" and self.current_tutorial_step < len(self.tutorial_steps):

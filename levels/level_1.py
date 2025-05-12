@@ -7,6 +7,7 @@ import pygame
 
 from levels.base_level import BaseLevel
 from services.service_registry import ServiceRegistry
+from services.connection_animator import ConnectionAnimator
 
 
 class Level1(BaseLevel):
@@ -95,6 +96,9 @@ class Level1(BaseLevel):
     
     def update(self) -> None:
         """Update the level state."""
+        # Call parent update to handle connection animations
+        super().update()
+        
         # Check if we should advance the tutorial step
         if self.game.state.mode.name == "TUTORIAL":
             if self.current_tutorial_step < len(self.tutorial_steps) - 1:
@@ -291,30 +295,8 @@ class Level1(BaseLevel):
         for node in self.placed_service_nodes:
             node.render(surface)
         
-        # Draw connections with improved styling
-        for source, target in self.connections:
-            # Get connection points
-            start_point = source.get_connection_point()
-            end_point = target.get_connection_point()
-            
-            # Draw connection line with gradient effect
-            # First draw a thicker, semi-transparent line for glow effect
-            pygame.draw.line(
-                surface,
-                (255, 153, 0, 128),  # AWS Orange with transparency
-                start_point,
-                end_point,
-                5
-            )
-            
-            # Then draw the main connection line
-            pygame.draw.line(
-                surface,
-                (255, 153, 0),  # AWS Orange
-                start_point,
-                end_point,
-                2
-            )
+        # Draw connections with animated styling
+        self.connection_animator.render(surface, self.connections)
         
         # Draw tutorial step if in tutorial mode
         if self.game.state.mode.name == "TUTORIAL" and self.current_tutorial_step < len(self.tutorial_steps):

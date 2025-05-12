@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple
 import pygame
 
 from services.service_node import ServiceNode
+from services.connection_animator import ConnectionAnimator
 
 
 class BaseLevel(ABC):
@@ -39,6 +40,9 @@ class BaseLevel(ABC):
         self.connections: List[Tuple[ServiceNode, ServiceNode]] = []
         self.tutorial_steps: List[str] = []
         self.current_tutorial_step: int = 0
+        
+        # Initialize connection animator
+        self.connection_animator = ConnectionAnimator()
         
         # Canvas dimensions
         self.canvas_rect = pygame.Rect(
@@ -173,6 +177,10 @@ class BaseLevel(ABC):
             if state_connection in self.game.state.connections:
                 self.game.state.connections.remove(state_connection)
             
+            # Remove from animator if available
+            if hasattr(self, 'connection_animator'):
+                self.connection_animator.remove_connection(source.service_id, target.service_id)
+            
             return True
         
         return False
@@ -240,7 +248,8 @@ class BaseLevel(ABC):
     @abstractmethod
     def update(self) -> None:
         """Update the level state."""
-        pass
+        # Update connection animations
+        self.connection_animator.update()
     
     @abstractmethod
     def render(self, surface: pygame.Surface) -> None:
@@ -342,6 +351,10 @@ class BaseLevel(ABC):
             # Add the connection
             self.connections.append((source, target))
             self.game.state.connections.append((source.service_id, target.service_id))
+            
+            # Add connection to animator if available
+            if hasattr(self, 'connection_animator'):
+                self.connection_animator.add_connection(source.service_id, target.service_id)
             
             # Update score
             self.game.state.score += self.game.config.game.scoring.correct_connection

@@ -11,6 +11,7 @@ from core.level_manager import LevelManager
 from core.time_manager import TimeManager
 from ui.ui_manager import UIManager
 from ui.main_menu import MainMenu
+from ui.aws_theme import AWSColors
 
 
 class Game:
@@ -127,6 +128,31 @@ class Game:
         self.main_menu.active = True
         self.show_completion_screen = False
         self.completion_screen = None
+        
+        # Refresh main menu button states to ensure completed levels are properly shown
+        if hasattr(self.main_menu, 'level_buttons'):
+            for i, button in enumerate(self.main_menu.level_buttons):
+                level_id = i + 1
+                is_unlocked = level_id in self.state.unlocked_levels
+                is_completed = level_id in self.state.completed_levels
+                is_selected = level_id == self.main_menu.selected_level
+                
+                # Update button state
+                button.disabled = not is_unlocked
+                
+                # Set button style based on status
+                if is_selected:
+                    button.bg_color = AWSColors.SMILE_ORANGE
+                    button.hover_color = (230, 138, 0)  # Darker orange
+                elif is_completed:
+                    button.bg_color = AWSColors.SUCCESS
+                    button.hover_color = (48, 155, 68)  # Darker green
+                elif is_unlocked:
+                    button.bg_color = AWSColors.BUTTON_SECONDARY
+                    button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
+                else:
+                    button.bg_color = AWSColors.BUTTON_DISABLED
+                    button.hover_color = AWSColors.BUTTON_DISABLED
     
     def show_level_completion(self, score: int, rank: str, level_id: int) -> None:
         """

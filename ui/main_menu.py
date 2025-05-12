@@ -22,7 +22,12 @@ class MainMenu:
         """
         self.game = game
         self.active = True
-        self.selected_level = 1
+        
+        # Set selected level to the highest unlocked level or last completed level
+        highest_level = max(self.game.state.unlocked_levels) if self.game.state.unlocked_levels else 1
+        last_completed = max(self.game.state.completed_levels.keys()) if self.game.state.completed_levels else 0
+        self.selected_level = max(1, last_completed)  # Default to last completed level or 1
+        
         self.tutorial_mode = False
         self.time_trial_mode = False
         
@@ -135,9 +140,16 @@ class MainMenu:
             is_unlocked = i in self.game.state.unlocked_levels
             is_completed = i in self.game.state.completed_levels
             
-            # Set button style based on status
+            # Set button style and colors based on status
             style = "secondary"
-            if not is_unlocked:
+            bg_color = None
+            hover_color = None
+            
+            if is_completed:
+                style = "secondary"
+                bg_color = AWSColors.SUCCESS
+                hover_color = (48, 155, 68)  # Darker green
+            elif not is_unlocked:
                 style = "disabled"
             
             level_button = Button(
@@ -145,6 +157,8 @@ class MainMenu:
                 text=str(i),
                 callback=lambda level=i: self._on_level_click(level),
                 style=style,
+                bg_color=bg_color,
+                hover_color=hover_color,
                 disabled=not is_unlocked
             )
             self.buttons.append(level_button)
@@ -479,6 +493,30 @@ class MainMenu:
         # Only allow selecting unlocked levels
         if level_id in self.game.state.unlocked_levels:
             self.selected_level = level_id
+            
+            # Update button states immediately
+            for i, button in enumerate(self.level_buttons):
+                btn_level_id = i + 1
+                is_unlocked = btn_level_id in self.game.state.unlocked_levels
+                is_completed = btn_level_id in self.game.state.completed_levels
+                is_selected = btn_level_id == self.selected_level
+                
+                # Update button state
+                button.disabled = not is_unlocked
+                
+                # Set button style based on status
+                if is_selected:
+                    button.bg_color = AWSColors.SMILE_ORANGE
+                    button.hover_color = (230, 138, 0)  # Darker orange
+                elif is_completed:
+                    button.bg_color = AWSColors.SUCCESS
+                    button.hover_color = (48, 155, 68)  # Darker green
+                elif is_unlocked:
+                    button.bg_color = AWSColors.BUTTON_SECONDARY
+                    button.hover_color = AWSColors.BUTTON_SECONDARY_HOVER
+                else:
+                    button.bg_color = AWSColors.BUTTON_DISABLED
+                    button.hover_color = AWSColors.BUTTON_DISABLED
     
     def _on_start_click(self) -> None:
         """Handle click on the start button."""

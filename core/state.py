@@ -50,7 +50,13 @@ class GameState:
                 with open(config_path, "r") as f:
                     config = json.load(f)
                     if config.get("debug", {}).get("unlock_all_levels", False):
+                        # Unlock all levels
                         self.unlocked_levels = set(range(1, 11))  # Unlock levels 1-10
+                        
+                        # Also mark some levels as completed for testing
+                        if config.get("debug", {}).get("complete_some_levels", False):
+                            for i in range(1, 4):  # Mark levels 1-3 as completed
+                                self.completed_levels[i] = 200  # Good score
         except Exception:
             # Silently fail if there's an issue loading the config
             pass
@@ -80,6 +86,9 @@ class GameState:
         # Unlock the next level if available
         if level_id < 10:  # Assuming 10 is the maximum level
             self.unlocked_levels.add(level_id + 1)
+        
+        # Make sure the current level is also marked as unlocked
+        self.unlocked_levels.add(level_id)
         
         # Update total score
         self.total_score = sum(self.completed_levels.values())
