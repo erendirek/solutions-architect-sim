@@ -7,6 +7,7 @@ import pygame
 
 from levels.base_level import BaseLevel
 from services.service_registry import ServiceRegistry
+from services.connection_animator import ConnectionAnimator
 
 
 class Level2(BaseLevel):
@@ -114,27 +115,165 @@ class Level2(BaseLevel):
         Args:
             surface: Pygame surface to render on
         """
-        # Draw service panel background
+        # Draw service panel background with gradient
         panel_rect = pygame.Rect(0, 0, self.game.config.ui.service_panel_width, self.game.config.window.height - self.game.config.ui.hud_height)
-        pygame.draw.rect(surface, (220, 220, 220), panel_rect)
-        pygame.draw.line(surface, (180, 180, 180), (panel_rect.right, 0), (panel_rect.right, panel_rect.bottom), 2)
         
-        # Draw service icons in panel
-        font = pygame.font.SysFont("Arial", 12)
+        # Create gradient from top to bottom
+        for y in range(panel_rect.height):
+            # Calculate color for this line
+            ratio = y / panel_rect.height
+            
+            # Gradient from light to slightly darker
+            color = (
+                int(230 * (1 - ratio) + 210 * ratio),
+                int(230 * (1 - ratio) + 210 * ratio),
+                int(235 * (1 - ratio) + 220 * ratio)
+            )
+            
+            pygame.draw.line(surface, color, (0, y), (panel_rect.right, y))
+        
+        # Draw panel title
+        title_font = pygame.font.SysFont("Arial", 16, bold=True)
+        title_text = title_font.render("AWS Services", True, (50, 50, 50))
+        title_rect = title_text.get_rect(centerx=panel_rect.width // 2, top=10)
+        
+        # Draw title background
+        title_bg_rect = title_rect.inflate(20, 10)
+        pygame.draw.rect(surface, (255, 255, 255, 180), title_bg_rect, border_radius=5)
+        
+        # Draw title text
+        surface.blit(title_text, title_rect)
+        
+        # Draw separator line
+        pygame.draw.line(
+            surface, 
+            (180, 180, 180), 
+            (panel_rect.right, 0), 
+            (panel_rect.right, panel_rect.bottom), 
+            2
+        )
+        
+        # Draw subtle pattern in panel
+        pattern_color = (200, 200, 205)
+        pattern_spacing = 15
+        
+        for x in range(0, panel_rect.width, pattern_spacing):
+            pygame.draw.line(
+                surface,
+                pattern_color,
+                (x, 0),
+                (x, panel_rect.height),
+                1
+            )
+        
+        # Draw service icons in panel with improved styling
+        font = pygame.font.SysFont("Arial", 12, bold=True)
         for service_id, rect in self.service_rects.items():
+            # Draw icon background and border
+            bg_rect = rect.inflate(8, 8)
+            
+            # Draw background
+            pygame.draw.rect(
+                surface,
+                (240, 240, 240),  # Light background
+                bg_rect,
+                border_radius=6
+            )
+            
+            # Draw border
+            pygame.draw.rect(
+                surface,
+                (180, 180, 180),  # Border color
+                bg_rect,
+                2,
+                border_radius=6
+            )
+            
             # Draw icon
             surface.blit(self.service_icons[service_id], rect)
             
-            # Draw service name
+            # Draw service name with better visibility
             service_info = ServiceRegistry.get_service(service_id)
             if service_info:
+                # Draw text shadow for better readability
+                shadow_text = font.render(service_info.display_name, True, (50, 50, 50))
+                shadow_rect = shadow_text.get_rect(centerx=rect.centerx + 1, top=rect.bottom + 3)
+                surface.blit(shadow_text, shadow_rect)
+                
+                # Draw text
                 text = font.render(service_info.display_name, True, (0, 0, 0))
                 text_rect = text.get_rect(centerx=rect.centerx, top=rect.bottom + 2)
                 surface.blit(text, text_rect)
         
-        # Draw canvas background
-        pygame.draw.rect(surface, (255, 255, 255), self.canvas_rect)
-        pygame.draw.rect(surface, (200, 200, 200), self.canvas_rect, 2)
+        # Draw canvas background with grid pattern
+        # Fill with base color
+        pygame.draw.rect(surface, (240, 240, 245), self.canvas_rect)
+        
+        # Draw subtle grid pattern
+        grid_spacing = 20
+        grid_color = (230, 230, 235)
+        
+        # Draw horizontal grid lines
+        for y in range(self.canvas_rect.top, self.canvas_rect.bottom, grid_spacing):
+            pygame.draw.line(
+                surface,
+                grid_color,
+                (self.canvas_rect.left, y),
+                (self.canvas_rect.right, y),
+                1
+            )
+        
+        # Draw vertical grid lines
+        for x in range(self.canvas_rect.left, self.canvas_rect.right, grid_spacing):
+            pygame.draw.line(
+                surface,
+                grid_color,
+                (x, self.canvas_rect.top),
+                (x, self.canvas_rect.bottom),
+                1
+            )
+        
+        # Draw border with gradient effect
+        border_colors = [
+            (180, 180, 200),  # Top and left
+            (150, 150, 170)   # Bottom and right
+        ]
+        
+        # Top border
+        pygame.draw.line(
+            surface,
+            border_colors[0],
+            (self.canvas_rect.left, self.canvas_rect.top),
+            (self.canvas_rect.right, self.canvas_rect.top),
+            2
+        )
+        
+        # Left border
+        pygame.draw.line(
+            surface,
+            border_colors[0],
+            (self.canvas_rect.left, self.canvas_rect.top),
+            (self.canvas_rect.left, self.canvas_rect.bottom),
+            2
+        )
+        
+        # Bottom border
+        pygame.draw.line(
+            surface,
+            border_colors[1],
+            (self.canvas_rect.left, self.canvas_rect.bottom),
+            (self.canvas_rect.right, self.canvas_rect.bottom),
+            2
+        )
+        
+        # Right border
+        pygame.draw.line(
+            surface,
+            border_colors[1],
+            (self.canvas_rect.right, self.canvas_rect.top),
+            (self.canvas_rect.right, self.canvas_rect.bottom),
+            2
+        )
         
         # Draw placed services on canvas
         for node in self.placed_service_nodes:
